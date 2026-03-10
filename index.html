@@ -799,6 +799,205 @@
             overflow-y: auto;
         }
 
+        /* ===== PASSWWORD TOGGLE ===== */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-right: 40px !important;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: color var(--transition-fast);
+            z-index: 5;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent-primary);
+        }
+
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ===== CUSTOM DROPDOWN ===== */
+        .dropdown-wrapper {
+            position: relative;
+        }
+
+        .custom-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .custom-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            font-size: 0.92rem;
+            color: var(--text-primary);
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-input);
+            color: var(--accent-primary);
+        }
+
+        .dropdown-item.no-results {
+            color: var(--text-muted);
+            font-style: italic;
+            cursor: default;
+        }
+
+        .dropdown-item.no-results:hover {
+            background: transparent;
+        }
+
+        /* ===== RESPONSIVE STYLES ===== */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .home-section {
+                padding: 20px 16px;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .welcome-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .spreadsheet {
+                min-width: 1500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            html {
+                font-size: 13px;
+            }
+
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .selection-grid .form-group:nth-child(2) {
+                grid-column: 1;
+            }
+
+            .nav-tabs {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg-secondary);
+                padding: 10px;
+                border-top: 1px solid var(--border-color);
+                justify-content: space-around;
+                z-index: 1000;
+            }
+
+            .header-content {
+                justify-content: center;
+            }
+
+            .nav-tabs .nav-btn {
+                flex: 1;
+                text-align: center;
+                padding: 12px 5px;
+                font-size: 0.8rem;
+            }
+
+            #currentDateTime {
+                display: none;
+            }
+
+            .home-section {
+                padding-bottom: 80px;
+            }
+
+            .footer {
+                padding-bottom: 100px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .timesheet-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .timesheet-actions {
+                justify-content: space-between;
+            }
+
+            .btn-back,
+            .btn-submit {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-section {
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .company-name {
+                font-size: 1.1rem;
+            }
+
+            .app-subtitle {
+                font-size: 0.75rem;
+            }
+
+            .welcome-text h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* ===== RESTORED STYLES ===== */
         .status-table {
             width: 100%;
             border-collapse: collapse;
@@ -872,6 +1071,106 @@
             color: white;
             border-color: var(--accent-primary);
         }
+
+        /* ===== VERTICAL ENTRY MODE (DAY WISE) ===== */
+        .vertical-mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 25px;
+            background: var(--bg-tertiary);
+        }
+
+        .vertical-field-card {
+            background: var(--bg-card);
+            padding: 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .vertical-field-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-primary);
+        }
+
+        .vertical-field-card label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 5px;
+        }
+
+        .vertical-field-card input,
+        .vertical-field-card select {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 500;
+            background: var(--bg-input);
+            transition: all var(--transition-fast);
+        }
+
+        .vertical-field-card input:focus {
+            border-color: var(--accent-primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            outline: none;
+        }
+
+        .vertical-info-banner {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 20px;
+            background: var(--accent-primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .vertical-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .vertical-info-item span:first-child {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        .vertical-mode .spreadsheet {
+            display: none;
+        }
+
+        .vertical-mode .spreadsheet-container {
+            max-height: none;
+            overflow: visible;
+        }
+
+        .vertical-mode .spreadsheet-wrapper {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        @media (max-width: 600px) {
+            .vertical-mode-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 
@@ -941,12 +1240,24 @@
                             </select>
                         </div>
                         <div class="form-group"><label>Worker Full Name</label>
-                            <input type="text" id="workerSelect" list="workerList"
-                                placeholder="Type to search worker..." autocomplete="off">
-                            <datalist id="workerList"></datalist>
+                            <div class="dropdown-wrapper">
+                                <input type="text" id="workerSelect" placeholder="Click to choose worker..."
+                                    autocomplete="off" onfocus="showCustomWorkerList()"
+                                    oninput="filterCustomWorkerList()">
+                                <div id="customWorkerDropdown" class="custom-dropdown"></div>
+                            </div>
                         </div>
                         <div class="form-group" id="workerPasswordGroup"><label>Worker Password</label>
-                            <input type="password" id="workerPassword" placeholder="Enter your password">
+                            <div class="password-container">
+                                <input type="password" id="workerPassword" placeholder="Enter your password">
+                                <button type="button" class="toggle-password"
+                                    onclick="togglePasswordVisibility('workerPassword')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
                             <div style="text-align: right; margin-top: -4px;">
                                 <a href="javascript:void(0)" onclick="openChangePasswordModal()"
                                     style="font-size: 0.75rem; color: var(--accent-primary); text-decoration: none; font-weight: 600;">Change
@@ -973,7 +1284,8 @@
                                 <option value="November">November</option>
                                 <option value="December">December</option>
                             </select></div>
-                        <div class="form-group" id="yearGroup"><label>Year</label><select id="yearSelect"></select>
+                        <div class="form-group" id="yearGroup"><label>Year</label>
+                            <input type="number" id="yearSelect" min="1900" max="3000" placeholder="Year">
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: auto;">
@@ -999,7 +1311,15 @@
             </div>
             <div class="form-group" style="margin-bottom: 25px;">
                 <label>Password</label>
-                <input type="password" id="adminPassword" placeholder="••••••••">
+                <div class="password-container">
+                    <input type="password" id="adminPassword" placeholder="••••••••">
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('adminPassword')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
                 <div style="text-align: right; margin-top: 4px;">
                     <a href="javascript:void(0)" onclick="openAdminChangePasswordModal()"
                         style="font-size: 0.75rem; color: var(--accent-primary); text-decoration: none; font-weight: 600;">Change
@@ -1024,15 +1344,40 @@
             <p style="margin-bottom: 20px; color: var(--text-secondary);">Update your timesheet password</p>
             <div class="form-group" style="margin-bottom: 15px;">
                 <label>Old Password</label>
-                <input type="password" id="cpOldPassword" placeholder="Enter old password">
+                <div class="password-container">
+                    <input type="password" id="cpOldPassword" placeholder="Enter old password">
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('cpOldPassword')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class="form-group" style="margin-bottom: 15px;">
                 <label>New Password</label>
-                <input type="password" id="cpNewPassword" placeholder="Enter new password">
+                <div class="password-container">
+                    <input type="password" id="cpNewPassword" placeholder="Enter new password">
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('cpNewPassword')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class="form-group" style="margin-bottom: 25px;">
                 <label>Confirm New Password</label>
-                <input type="password" id="cpConfirmPassword" placeholder="Confirm new password">
+                <div class="password-container">
+                    <input type="password" id="cpConfirmPassword" placeholder="Confirm new password">
+                    <button type="button" class="toggle-password"
+                        onclick="togglePasswordVisibility('cpConfirmPassword')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div style="display: flex; gap: 10px;">
                 <button class="btn-back" style="flex:1" onclick="closeModal('changePasswordModal')">Cancel</button>
@@ -1144,6 +1489,7 @@
                     <tbody id="spreadsheetBody"></tbody>
                     <tfoot id="spreadsheetFoot"></tfoot>
                 </table>
+                <div id="dayWiseForm" class="vertical-mode-grid" style="display:none;"></div>
             </div>
         </div>
     </section>
@@ -1156,15 +1502,14 @@
         let currentWorker = '', currentMonth = '', currentYear = '', currentData = [], daysInMonth = 0, entryMode = 'month', isAdmin = false, masterWorkerList = {}, masterAdmins = [], currentDepartment = '', isLocked = false, selectedDayOnly = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            populateYearDropdown();
             setDefaultMonthYear();
             updateClock();
             setInterval(updateClock, 60000);
-            refreshWorkerListFromMaster();
+            rNPFMByeC1DGQ8AEMX4LSoTq8Y7appM6Hc();
         });
 
         function updateClock() { const now = new Date(); const clockEl = document.getElementById('currentDateTime'); if (clockEl) clockEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
-        function populateYearDropdown() { const yearSelect = document.getElementById('yearSelect'); const cYear = new Date().getFullYear(); for (let y = cYear - 2; y <= cYear + 3; y++) { const opt = document.createElement('option'); opt.value = y; opt.textContent = y; yearSelect.appendChild(opt); } }
+
         function setDefaultMonthYear() { const now = new Date(); const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; document.getElementById('monthSelect').value = months[now.getMonth()]; document.getElementById('yearSelect').value = now.getFullYear(); document.getElementById('dateSelect').valueAsDate = now; }
 
         function setEntryMode(mode) {
@@ -1190,7 +1535,7 @@
             document.getElementById('timesheetSection').classList.toggle('hidden', id !== 'timesheet');
         }
 
-        async function refreshWorkerListFromMaster() {
+        async function rNPFMByeC1DGQ8AEMX4LSoTq8Y7appM6Hc() {
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=getWorkerList`).then(r => r.json());
                 if (res.status === 'success') {
@@ -1217,19 +1562,79 @@
         function loadWorkerList() {
             const dept = document.getElementById('departmentSelect').value;
             const input = document.getElementById('workerSelect');
-            const dataList = document.getElementById('workerList');
+            const dropdown = document.getElementById('customWorkerDropdown');
             input.value = '';
-            dataList.innerHTML = '';
+            dropdown.innerHTML = '';
+            dropdown.classList.remove('show');
             if (dept && masterWorkerList[dept]) {
-                masterWorkerList[dept].forEach(worker => {
-                    const opt = document.createElement('option');
-                    // Handle case where object or simple string is returned
-                    const wName = typeof worker === 'string' ? worker : worker.name;
-                    opt.value = wName;
-                    dataList.appendChild(opt);
-                });
+                filterCustomWorkerList();
             }
         }
+
+        function togglePasswordVisibility(id) {
+            const el = document.getElementById(id);
+            const btn = el.nextElementSibling;
+            if (el.type === 'password') {
+                el.type = 'text';
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+            } else {
+                el.type = 'password';
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+            }
+        }
+
+        function showCustomWorkerList() {
+            const dept = document.getElementById('departmentSelect').value;
+            if (!dept) {
+                showToast('Select Department first', 'info');
+                return;
+            }
+            filterCustomWorkerList();
+            document.getElementById('customWorkerDropdown').classList.add('show');
+        }
+
+        function filterCustomWorkerList() {
+            const dept = document.getElementById('departmentSelect').value;
+            const inputVal = document.getElementById('workerSelect').value.toLowerCase();
+            const dropdown = document.getElementById('customWorkerDropdown');
+            dropdown.innerHTML = '';
+
+            if (dept && masterWorkerList[dept]) {
+                const filtered = masterWorkerList[dept].filter(worker => {
+                    const wName = typeof worker === 'string' ? worker : worker.name;
+                    return wName.toLowerCase().includes(inputVal);
+                });
+
+                if (filtered.length > 0) {
+                    filtered.forEach(worker => {
+                        const wName = typeof worker === 'string' ? worker : worker.name;
+                        const div = document.createElement('div');
+                        div.className = 'dropdown-item';
+                        div.textContent = wName;
+                        div.onclick = () => selectWorker(wName);
+                        dropdown.appendChild(div);
+                    });
+                } else {
+                    const div = document.createElement('div');
+                    div.className = 'dropdown-item no-results';
+                    div.textContent = 'No matching workers';
+                    dropdown.appendChild(div);
+                }
+            }
+        }
+
+        function selectWorker(name) {
+            document.getElementById('workerSelect').value = name;
+            document.getElementById('customWorkerDropdown').classList.remove('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown-wrapper')) {
+                const dropdown = document.getElementById('customWorkerDropdown');
+                if (dropdown) dropdown.classList.remove('show');
+            }
+        });
 
         function toggleAdminLogin() {
             if (isAdmin) {
@@ -1379,35 +1784,78 @@
 
         function buildSpreadsheet(data) {
             const tbody = document.getElementById('spreadsheetBody');
+            const table = document.getElementById('spreadsheetTable');
+            const dayForm = document.getElementById('dayWiseForm');
+            const section = document.getElementById('timesheetSection');
+
             tbody.innerHTML = '';
-            const mIdx = getMonthIndex(currentMonth);
-            for (let d = 1; d <= daysInMonth; d++) {
-                if (selectedDayOnly && d !== selectedDayOnly) continue;
-                const date = new Date(currentYear, mIdx, d), dName = getDayName(date), dStr = formatDate(d, currentMonth, currentYear), isSun = date.getDay() === 0, isSat = date.getDay() === 6;
-                const tr = document.createElement('tr');
-                if (isSun) tr.classList.add('row-sunday'); else if (isSat) tr.classList.add('row-saturday');
-                const rD = data ? data.find(x => x.date === dStr) : null;
-                tr.innerHTML = `<td class="${isLocked ? 'locked' : ''}">${d}</td><td class="${isLocked ? 'locked' : ''}">${currentWorker}</td><td class="${isLocked ? 'locked' : ''}">${dStr}</td><td class='${isSun ? 'sunday' : isSat ? 'saturday' : ''} ${isLocked ? 'locked' : ''}'>${dName}</td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='time' id='dayShiftIn_${d}' value='${rD ? rD.dayShiftIn || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='time' id='dayShiftOut_${d}' value='${rD ? rD.dayShiftOut || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='time' id='clientIn_${d}' value='${rD ? rD.clientIn || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='time' id='clientOut_${d}' value='${rD ? rD.clientOut || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='text' id='siteLoc1_${d}' value='${rD ? rD.siteLoc1 || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='text' id='siteLoc2_${d}' value='${rD ? rD.siteLoc2 || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='number' id='otHrs_${d}' step='0.5' value='${rD ? rD.otHrs || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='number' id='siteAllowanceHrs_${d}' step='0.5' value='${rD ? rD.siteAllowanceHrs || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='number' id='travelAllowance_${d}' step='0.01' value='${rD ? rD.travelAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='number' id='otherAllowance_${d}' step='0.01' value='${rD ? rD.otherAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='number' id='busAllowance_${d}' step='0.01' value='${rD ? rD.busAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                    <td class="${isLocked ? 'locked' : ''}"><input type='text' id='remarks_${d}' value='${rD ? rD.remarks || '' : ''}' ${isLocked ? 'readonly' : ''}></td>`;
-                tbody.appendChild(tr);
-            }
-            buildTotalsRow(); updateTotals();
+            dayForm.innerHTML = '';
+
             if (selectedDayOnly) {
+                // Day Wise - Vertical View
+                section.classList.add('vertical-mode');
+                table.style.display = 'none';
+                dayForm.style.display = 'grid';
+
+                const d = selectedDayOnly;
+                const mIdx = getMonthIndex(currentMonth);
+                const date = new Date(currentYear, mIdx, d), dName = getDayName(date), dStr = formatDate(d, currentMonth, currentYear);
+                const rD = data ? data.find(x => x.date === dStr) : null;
+
+                dayForm.innerHTML = `
+                    <div class="vertical-info-banner">
+                        <div class="vertical-info-item"><span>Worker</span><span>${currentWorker}</span></div>
+                        <div class="vertical-info-item"><span>Date</span><span>${dStr}</span></div>
+                        <div class="vertical-info-item"><span>Day</span><span>${dName}</span></div>
+                    </div>
+                    <div class="vertical-field-card"><label>Shift IN</label><input type='time' id='dayShiftIn_${d}' value='${rD ? rD.dayShiftIn || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Shift OUT</label><input type='time' id='dayShiftOut_${d}' value='${rD ? rD.dayShiftOut || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Client IN</label><input type='time' id='clientIn_${d}' value='${rD ? rD.clientIn || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Client OUT</label><input type='time' id='clientOut_${d}' value='${rD ? rD.clientOut || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Site Location 1</label><input type='text' id='siteLoc1_${d}' value='${rD ? rD.siteLoc1 || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Site Location 2</label><input type='text' id='siteLoc2_${d}' value='${rD ? rD.siteLoc2 || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>OT Hrs</label><input type='number' id='otHrs_${d}' step='0.5' value='${rD ? rD.otHrs || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Site Allowance Hrs</label><input type='number' id='siteAllowanceHrs_${d}' step='0.5' value='${rD ? rD.siteAllowanceHrs || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Travel Allowance</label><input type='number' id='travelAllowance_${d}' step='0.01' value='${rD ? rD.travelAllowance || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Other Allowance</label><input type='number' id='otherAllowance_${d}' step='0.01' value='${rD ? rD.otherAllowance || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card"><label>Bus Allowance</label><input type='number' id='busAllowance_${d}' step='0.01' value='${rD ? rD.busAllowance || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div class="vertical-field-card" style="grid-column: 1 / -1;"><label>Remarks</label><input type='text' id='remarks_${d}' value='${rD ? rD.remarks || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                `;
+
+                // Set focus
                 setTimeout(() => {
-                    const firstInput = document.getElementById(`dayShiftIn_${selectedDayOnly}`);
-                    if (firstInput) { firstInput.focus(); firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                    const firstInput = document.getElementById(`dayShiftIn_${d}`);
+                    if (firstInput) firstInput.focus();
                 }, 100);
+
+            } else {
+                // Month Wise - Horizontal View
+                section.classList.remove('vertical-mode');
+                table.style.display = 'table';
+                dayForm.style.display = 'none';
+
+                const mIdx = getMonthIndex(currentMonth);
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const date = new Date(currentYear, mIdx, d), dName = getDayName(date), dStr = formatDate(d, currentMonth, currentYear), isSun = date.getDay() === 0, isSat = date.getDay() === 6;
+                    const tr = document.createElement('tr');
+                    if (isSun) tr.classList.add('row-sunday'); else if (isSat) tr.classList.add('row-saturday');
+                    const rD = data ? data.find(x => x.date === dStr) : null;
+                    tr.innerHTML = `<td class="${isLocked ? 'locked' : ''}">${d}</td><td class="${isLocked ? 'locked' : ''}">${currentWorker}</td><td class="${isLocked ? 'locked' : ''}">${dStr}</td><td class='${isSun ? 'sunday' : isSat ? 'saturday' : ''} ${isLocked ? 'locked' : ''}'>${dName}</td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='time' id='dayShiftIn_${d}' value='${rD ? rD.dayShiftIn || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='time' id='dayShiftOut_${d}' value='${rD ? rD.dayShiftOut || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='time' id='clientIn_${d}' value='${rD ? rD.clientIn || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='time' id='clientOut_${d}' value='${rD ? rD.clientOut || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='text' id='siteLoc1_${d}' value='${rD ? rD.siteLoc1 || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='text' id='siteLoc2_${d}' value='${rD ? rD.siteLoc2 || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='otHrs_${d}' step='0.5' value='${rD ? rD.otHrs || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='siteAllowanceHrs_${d}' step='0.5' value='${rD ? rD.siteAllowanceHrs || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='travelAllowance_${d}' step='0.01' value='${rD ? rD.travelAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='otherAllowance_${d}' step='0.01' value='${rD ? rD.otherAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='busAllowance_${d}' step='0.01' value='${rD ? rD.busAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
+                        <td class="${isLocked ? 'locked' : ''}"><input type='text' id='remarks_${d}' value='${rD ? rD.remarks || '' : ''}' ${isLocked ? 'readonly' : ''}></td>`;
+                    tbody.appendChild(tr);
+                }
+                buildTotalsRow(); updateTotals();
             }
         }
 
@@ -1601,7 +2049,7 @@
                     } else {
                         document.getElementById('adminPassword').value = newPwd;
                     }
-                    refreshWorkerListFromMaster();
+                    rNPFMByeC1DGQ8AEMX4LSoTq8Y7appM6Hc();
                 } else {
                     showToast(res.message || 'Error updating password', 'error');
                 }
