@@ -1402,6 +1402,24 @@
         </div>
     </div>
 
+    <!-- Exit Confirmation Modal (Save & Exit) -->
+    <div id="exitConfirmModal" class="modal">
+        <div class="modal-content" style="max-width: 450px; text-align: left; padding: 40px;">
+            <p
+                style="margin-bottom: 12px; font-weight: 500; font-size: 1.2rem; color: #1e293b; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                Click 'OK' to Save and Exit.</p>
+            <p
+                style="margin-bottom: 35px; font-weight: 500; font-size: 1.2rem; color: #1e293b; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                Click 'Cancel' to Exit WITHOUT saving.</p>
+            <div style="display: flex; justify-content: flex-end; gap: 20px;">
+                <button id="btnExitSave"
+                    style="background: #0056b3; color: white; border: 3px solid #0056b3; padding: 12px 35px; min-width: 110px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; outline: 3px solid white; outline-offset: -6px;">OK</button>
+                <button id="btnExitNoSave"
+                    style="background: #e0ecfe; color: #000; border: none; padding: 12px 35px; min-width: 110px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <section class="timesheet-section hidden" id="timesheetSection">
         <div class="timesheet-header">
             <div style="display: flex; align-items: center; gap: 40px;">
@@ -1520,6 +1538,17 @@
             updateClock();
             setInterval(updateClock, 60000);
             refreshWorkerListFromMaster();
+
+            // Set up exit modal handlers
+            document.getElementById('btnExitSave').onclick = async () => {
+                closeModal('exitConfirmModal');
+                await submitTimesheet();
+                exitTimesheet();
+            };
+            document.getElementById('btnExitNoSave').onclick = () => {
+                closeModal('exitConfirmModal');
+                exitTimesheet();
+            };
         });
 
         function updateClock() { const now = new Date(); const clockEl = document.getElementById('currentDateTime'); if (clockEl) clockEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
@@ -1834,6 +1863,16 @@
                     <div class="vertical-field-card"><label>Other Allowance</label><input type='number' id='otherAllowance_${d}' step='0.01' value='${rD ? rD.otherAllowance || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
                     <div class="vertical-field-card"><label>Bus Allowance</label><input type='number' id='busAllowance_${d}' step='0.01' value='${rD ? rD.busAllowance || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
                     <div class="vertical-field-card" style="grid-column: 1 / -1;"><label>Remarks</label><input type='text' id='remarks_${d}' value='${rD ? rD.remarks || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
+                    <div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 20px 0; border-top: 1px solid var(--border-color); margin-top: 20px;">
+                        <button class="btn-submit" onclick="handleSaveAndExit()" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); padding: 15px 50px; font-size: 1.2rem; border-radius: 50px; box-shadow: var(--shadow-lg);">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 12px;">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            Save &amp; Exit
+                        </button>
+                    </div>
                 `;
 
                 // Set focus
@@ -1939,6 +1978,11 @@
             const payload = { action: 'saveData', department: currentDepartment, monthYear: `${currentMonth} ${currentYear}`, sheetName: `${currentWorker}-${currentMonth}-${currentYear}`, workerName: currentWorker, rows: getTableRows() };
             try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }); hideLoading(); showToast('Saved Successfully!'); }
             catch (e) { hideLoading(); showToast('Error saving', 'error'); }
+        }
+
+        async function handleSaveAndExit() {
+            await submitTimesheet();
+            exitTimesheet();
         }
 
         function showVerifyPanel() { document.getElementById('verifyPanel').classList.add('show'); }
@@ -2073,22 +2117,12 @@
             }
         }
 
-        async function goBack() {
+        function goBack() {
             if (isLocked) {
                 exitTimesheet();
                 return;
             }
-
-            // Exactly as requested: 
-            // Save Option (OK) -> Save and Exit
-            // Cancel Option (Cancel) -> Exit without saving
-            const choice = confirm("Do you want to save your progress before exiting? \n\nClick 'OK' to Save and Exit. \nClick 'Cancel' to Exit WITHOUT saving.");
-
-            if (choice) {
-                await submitTimesheet();
-            }
-
-            exitTimesheet();
+            document.getElementById('exitConfirmModal').classList.add('show');
         }
 
 
