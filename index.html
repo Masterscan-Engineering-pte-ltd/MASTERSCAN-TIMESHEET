@@ -569,27 +569,167 @@
         .btn-back {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 9px 18px;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
+            gap: 8px;
+            padding: 8px 20px;
+            background: #ffffff;
+            color: #4361ee;
             border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm);
+            border-radius: 100px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-back:hover {
+            background: var(--bg-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .btn-submit {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 9px 22px;
-            background: linear-gradient(135deg, var(--accent-green), #059669);
+            padding: 8px 22px;
+            background: #10b981;
             color: white;
             border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.95rem;
             cursor: pointer;
+            transition: all var(--transition-fast);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-submit:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        /* ===== TIMESHEET HEADER REDESIGN ===== */
+        .timesheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: #f8f9fb;
+            border-radius: 0;
+            margin-bottom: 0;
+            max-width: 100%;
+            border-bottom: 1px solid var(--border-color);
+            gap: 20px;
+        }
+
+        .header-section-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .header-section-center {
+            text-align: center;
+            flex: 2;
+        }
+
+        .header-section-center h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        .header-section-center p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 2px 0 0;
+            font-weight: 600;
+        }
+
+        .header-section-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .zoom-control-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .zoom-btn {
+            background: none;
+            border: none;
+            color: #4361ee;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #zoomSlider {
+            width: 80px;
+            height: 6px;
+            appearance: none;
+            background: #e2e8f0;
+            border-radius: 100px;
+            outline: none;
+        }
+
+        #zoomSlider::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #4361ee;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .zoom-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .btn-icon-only {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-icon-only:hover {
+            background: var(--bg-hover);
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
         }
 
         /* ===== SPREADSHEET ===== */
@@ -1284,1007 +1424,4 @@
                                     Password?</a>
                                 <span style="font-size: 0.75rem; color: var(--text-muted); margin: 0 4px;">|</span>
                                 <a href="javascript:void(0)" onclick="handleForgotPassword('worker')"
-                                    style="font-size: 0.75rem; color: var(--accent-primary); text-decoration: none; font-weight: 600;">Forgot
-                                    Password?</a>
-                            </div>
-                        </div>
-                        <div class="form-group" id="dateGroup" style="display:none;"><label>Select Date</label><input
-                                type="date" id="dateSelect"></div>
-                        <div class="form-group" id="monthGroup"><label>Month</label><select id="monthSelect">
-                                <option value="January">January</option>
-                                <option value="February">February</option>
-                                <option value="March">March</option>
-                                <option value="April">April</option>
-                                <option value="May">May</option>
-                                <option value="June">June</option>
-                                <option value="July">July</option>
-                                <option value="August">August</option>
-                                <option value="September">September</option>
-                                <option value="October">October</option>
-                                <option value="November">November</option>
-                                <option value="December">December</option>
-                            </select></div>
-                        <div class="form-group" id="yearGroup"><label>Year</label>
-                            <input type="number" id="yearSelect" min="1900" max="3000" placeholder="Year">
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-top: auto;">
-                        <button class="btn-primary-lg" style="flex: 1;" id="btnContinue" onclick="loadTimesheet()">Open
-                            Portal</button>
-                        <button class="btn-primary-lg"
-                            style="flex: 0 0 120px; background: var(--bg-header-row); color: var(--text-primary); border: 1px solid var(--border-color);"
-                            onclick="showStatusModal()">Status</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Admin Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3>Admin Login</h3>
-            <p style="margin-bottom: 20px; color: var(--text-secondary);">Access restricted area</p>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>User ID</label>
-                <input type="text" id="adminId" placeholder="Masterscan">
-            </div>
-            <div class="form-group" style="margin-bottom: 25px;">
-                <label>Password</label>
-                <div class="password-container">
-                    <input type="password" id="adminPassword" placeholder="••••••••">
-                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('adminPassword')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                    </button>
-                </div>
-                <div style="text-align: right; margin-top: 4px;">
-                    <a href="javascript:void(0)" onclick="openAdminChangePasswordModal()"
-                        style="font-size: 0.75rem; color: var(--accent-primary); text-decoration: none; font-weight: 600;">Change
-                        Password?</a>
-                    <span style="font-size: 0.75rem; color: var(--text-muted); margin: 0 4px;">|</span>
-                    <a href="javascript:void(0)" onclick="handleForgotPassword('admin')"
-                        style="font-size: 0.75rem; color: var(--accent-primary); text-decoration: none; font-weight: 600;">Forgot
-                        Password?</a>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-back" style="flex:1" onclick="closeModal('loginModal')">Cancel</button>
-                <button class="btn-submit" style="flex:1" onclick="handleAdminLogin()">Login</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div id="changePasswordModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3>Change Password</h3>
-            <p style="margin-bottom: 20px; color: var(--text-secondary);">Update your timesheet password</p>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>Old Password</label>
-                <div class="password-container">
-                    <input type="password" id="cpOldPassword" placeholder="Enter old password">
-                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('cpOldPassword')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>New Password</label>
-                <div class="password-container">
-                    <input type="password" id="cpNewPassword" placeholder="Enter new password">
-                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('cpNewPassword')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="form-group" style="margin-bottom: 25px;">
-                <label>Confirm New Password</label>
-                <div class="password-container">
-                    <input type="password" id="cpConfirmPassword" placeholder="Confirm new password">
-                    <button type="button" class="toggle-password"
-                        onclick="togglePasswordVisibility('cpConfirmPassword')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-back" style="flex:1" onclick="closeModal('changePasswordModal')">Cancel</button>
-                <button class="btn-submit" style="flex:1" onclick="submitPasswordChange()">Update</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Status Modal -->
-    <div id="statusModal" class="modal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                <div>
-                    <h3>Submission Status</h3>
-                    <p id="statusSubtitle" style="color: var(--text-secondary); font-size: 0.9rem;"></p>
-                </div>
-                <button class="btn-back" onclick="closeModal('statusModal')">Close</button>
-            </div>
-            <div id="statusListContent">
-                <!-- Status table injected here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Exit Confirmation Modal (Save & Exit) -->
-    <div id="exitConfirmModal" class="modal">
-        <div class="modal-content" style="max-width: 450px; text-align: left; padding: 40px;">
-            <p
-                style="margin-bottom: 12px; font-weight: 500; font-size: 1.2rem; color: #1e293b; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                Click 'OK' to Save and Exit.</p>
-            <p
-                style="margin-bottom: 35px; font-weight: 500; font-size: 1.2rem; color: #1e293b; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                Click 'Cancel' to Exit WITHOUT saving.</p>
-            <div style="display: flex; justify-content: flex-end; gap: 20px;">
-                <button id="btnExitSave"
-                    style="background: #0056b3; color: white; border: 3px solid #0056b3; padding: 12px 35px; min-width: 110px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; outline: 3px solid white; outline-offset: -6px;">OK</button>
-                <button id="btnExitNoSave"
-                    style="background: #e0ecfe; color: #000; border: none; padding: 12px 35px; min-width: 110px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center;">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Logout Modal -->
-    <div id="logoutModal" class="modal">
-        <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <h3 style="margin-bottom: 10px;">Admin Actions</h3>
-            <p style="margin-bottom: 25px; color: var(--text-secondary);">What would you like to do?</p>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="btn-back" style="flex:1" onclick="closeModal('logoutModal')">Cancel</button>
-                <button class="btn-submit" style="flex:1; background: var(--accent-red);" onclick="performLogout()">Logout</button>
-            </div>
-        </div>
-    </div>
-
-    <section class="timesheet-section hidden" id="timesheetSection">
-        <div class="timesheet-header">
-            <!-- Left: Back button -->
-            <div style="flex: 1; display: flex; justify-content: flex-start; min-width: 100px;">
-                <button class="btn-back" onclick="goBack()"
-                    style="padding: 10px 25px; font-size: 1.1rem; border-radius: 50px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        style="margin-right: 8px;">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
-                    Back
-                </button>
-            </div>
-
-            <!-- Center: Optional Title (Subtle) -->
-            <div style="flex: 2; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                <h2 id="timesheetTitle" style="font-size: 1rem; margin: 0;">Timesheet</h2>
-                <p id="timesheetSubtitle" style="font-size: 0.75rem; color: var(--text-secondary); margin: 0;"></p>
-            </div>
-
-            <!-- Right: Fullscreen -->
-            <div style="flex: 1; display: flex; justify-content: flex-end; min-width: 100px;">
-                <button class="btn-fullscreen" onclick="toggleFullscreen()" id="btnFullscreen"
-                    title="Toggle Fullscreen (F11)" style="width: 44px; height: 44px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        id="fullscreenIcon">
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <polyline points="9 21 3 21 3 15"></polyline>
-                        <line x1="21" y1="3" x2="14" y2="10"></line>
-                        <line x1="3" y1="21" x2="10" y2="14"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <div class="spreadsheet-wrapper">
-            <div class="spreadsheet-container">
-                <table class="spreadsheet" id="spreadsheetTable">
-                    <thead>
-                        <tr>
-                            <th class="col-sno">#</th>
-                            <th class="col-name">Full Name</th>
-                            <th class="col-date">Date</th>
-                            <th class="col-day">Day</th>
-                            <th class="col-time">Shift IN</th>
-                            <th class="col-time">Shift OUT</th>
-                            <th class="col-time-wide">Client IN</th>
-                            <th class="col-time-wide">Client OUT</th>
-                            <th class="col-location">Site Location 1</th>
-                            <th class="col-location">Site Location 2</th>
-                            <th class="col-number">OT Hrs</th>
-                            <th class="col-number-wide">Site Allowance Hrs</th>
-                            <th class="col-money">Travel Allowance</th>
-                            <th class="col-money">Other Allowance</th>
-                            <th class="col-money">Bus Allowance</th>
-                            <th class="col-remarks">Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="spreadsheetBody"></tbody>
-                    <tfoot id="spreadsheetFoot"></tfoot>
-                </table>
-                <div id="dayWiseForm" class="vertical-mode-grid" style="display:none;"></div>
-            </div>
-        </div>
-
-        <div class="timesheet-bottom-controls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; max-width: 1800px; margin-left: auto; margin-right: auto; width: 100%;">
-            <!-- Zoom controls (like excel) -->
-            <div class="zoom-controls" style="display: flex; align-items: center; gap: 10px; background: var(--bg-card); padding: 5px 15px; border-radius: 5px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-                <button onclick="zoomOut()" style="background: none; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; color: var(--text-secondary); width: 24px;">&minus;</button>
-                <input type="range" id="zoomSlider" min="50" max="150" value="100" step="10" oninput="applyZoom()" style="width: 100px; cursor: pointer; accent-color: var(--text-secondary);">
-                <button onclick="zoomIn()" style="background: none; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; color: var(--text-secondary); width: 24px;">&plus;</button>
-                <span id="zoomText" style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); min-width: 45px; text-align: right;">100%</span>
-            </div>
-
-            <div class="timesheet-actions" style="display: flex; align-items: center; gap: 15px;">
-                <button class="btn-submit" id="btnSubmit" onclick="submitTimesheet()"
-                    style="background: var(--accent-green); padding: 10px 24px; font-size: 0.9rem; border-radius: 50px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        style="margin-right: 8px;">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                        <polyline points="7 3 7 8 15 8"></polyline>
-                    </svg>
-                    Submit &amp; Save
-                </button>
-                
-                <div id="btnAdminVerify" style="display: none; align-items: center; gap: 0; background: var(--accent-cyan); border-radius: 50px; overflow: hidden; box-shadow: var(--shadow-sm);">
-                    <div style="background: white; padding: 0 15px; height: 100%; display: flex; align-items: center; border-right: 1px solid var(--border-color);">
-                        <input type="text" id="verifierName" placeholder="Verifier Name" style="border: none; outline: none; background: transparent; font-size: 0.9rem; font-weight: 500; color: var(--text-primary); width: 140px; padding: 10px 0;">
-                    </div>
-                    <button class="btn-submit" onclick="handleVerify()"
-                        style="background: var(--accent-cyan); padding: 10px 20px; font-size: 0.9rem; font-weight: 600; border-radius: 0; border: none; display: flex; align-items: center;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        Approve &amp; Lock
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-    <footer class="footer">
-        <p>&copy; 2026 Monthly Atomization · MASTERSCAN Data System</p>
-    </footer>
-
-    <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMdXjaNeqY70tHgr7H_OducbNMj7y4J6NFMuBCOS5gZcFkTwtzTHHgBcmYSuJQJJ8F_w/exec';
-        let currentWorker = '', currentMonth = '', currentYear = '', currentData = [], daysInMonth = 0, entryMode = 'month', isAdmin = false, masterWorkerList = {}, masterAdmins = [], currentDepartment = '', isLocked = false, selectedDayOnly = null;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setDefaultMonthYear();
-            updateClock();
-            setInterval(updateClock, 60000);
-            refreshWorkerListFromMaster();
-
-            // Set up exit modal handlers
-            document.getElementById('btnExitSave').onclick = async () => {
-                closeModal('exitConfirmModal');
-                await submitTimesheet();
-                exitTimesheet();
-            };
-            document.getElementById('btnExitNoSave').onclick = () => {
-                closeModal('exitConfirmModal');
-                exitTimesheet();
-            };
-        });
-
-        function updateClock() { const now = new Date(); const clockEl = document.getElementById('currentDateTime'); if (clockEl) clockEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
-
-        function setDefaultMonthYear() { const now = new Date(); const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; document.getElementById('monthSelect').value = months[now.getMonth()]; document.getElementById('yearSelect').value = now.getFullYear(); document.getElementById('dateSelect').valueAsDate = now; }
-
-        function setEntryMode(mode) {
-            entryMode = mode;
-            document.getElementById('btnModeDay').classList.toggle('active', mode === 'day');
-            document.getElementById('btnModeMonth').classList.toggle('active', mode === 'month');
-            document.getElementById('dateGroup').style.display = mode === 'day' ? 'flex' : 'none';
-            document.getElementById('monthGroup').style.display = mode === 'month' ? 'flex' : 'none';
-            document.getElementById('yearGroup').style.display = mode === 'month' ? 'flex' : 'none';
-        }
-
-        function getDaysInMonth(m, y) { return new Date(y, getMonthIndex(m) + 1, 0).getDate(); }
-        function getDayName(d) { return ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'][d.getDay()]; }
-        function getMonthIndex(m) { return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(m); }
-        function formatDate(d, m, y) { return `${String(d).padStart(2, '0')}/${String(getMonthIndex(m) + 1).padStart(2, '0')}/${y}`; }
-
-        function showLoading(txt) { document.getElementById('loadingText').textContent = txt || 'Loading...'; document.getElementById('loadingOverlay').classList.remove('hidden'); }
-        function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
-        function showToast(msg, type = 'success') { const toast = document.getElementById('toast'), tMsg = document.getElementById('toastMessage'), tIco = document.getElementById('toastIcon'); tMsg.textContent = msg; toast.className = `toast ${type}`; tIco.textContent = type === 'success' ? '✓' : '✗'; setTimeout(() => toast.classList.add('show'), 10); setTimeout(() => toast.classList.remove('show'), 4000); }
-
-        function showSection(id) {
-            document.getElementById('homeSection').style.display = id === 'home' ? 'block' : 'none';
-            document.getElementById('timesheetSection').classList.toggle('hidden', id !== 'timesheet');
-        }
-
-        async function refreshWorkerListFromMaster() {
-            try {
-                const res = await fetch(`${SCRIPT_URL}?action=getWorkerList`).then(r => r.json());
-                if (res.status === 'success') {
-                    masterWorkerList = res.data;
-                    masterAdmins = res.admins || [];
-
-                    // Dynamically populate department dropdown
-                    const deptSelect = document.getElementById('departmentSelect');
-                    const currentVal = deptSelect.value;
-                    deptSelect.innerHTML = '<option value="">Select Department</option>';
-                    Object.keys(masterWorkerList).forEach(dept => {
-                        const opt = document.createElement('option');
-                        opt.value = dept;
-                        opt.textContent = dept;
-                        deptSelect.appendChild(opt);
-                    });
-                    if (currentVal) deptSelect.value = currentVal;
-
-                    loadWorkerList();
-                }
-            } catch (e) { console.error('Master list fetch failed', e); }
-        }
-
-        function loadWorkerList() {
-            const dept = document.getElementById('departmentSelect').value;
-            const input = document.getElementById('workerSelect');
-            const dropdown = document.getElementById('customWorkerDropdown');
-            input.value = '';
-            dropdown.innerHTML = '';
-            dropdown.classList.remove('show');
-            if (dept && masterWorkerList[dept]) {
-                filterCustomWorkerList();
-            }
-        }
-
-        function togglePasswordVisibility(id) {
-            const el = document.getElementById(id);
-            const btn = el.nextElementSibling;
-            if (el.type === 'password') {
-                el.type = 'text';
-                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
-            } else {
-                el.type = 'password';
-                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
-            }
-        }
-
-        function showCustomWorkerList() {
-            const dept = document.getElementById('departmentSelect').value;
-            if (!dept) {
-                showToast('Select Department first', 'info');
-                return;
-            }
-            filterCustomWorkerList();
-            document.getElementById('customWorkerDropdown').classList.add('show');
-        }
-
-        function filterCustomWorkerList() {
-            const dept = document.getElementById('departmentSelect').value;
-            const inputVal = document.getElementById('workerSelect').value.toLowerCase();
-            const dropdown = document.getElementById('customWorkerDropdown');
-            dropdown.innerHTML = '';
-
-            if (dept && masterWorkerList[dept]) {
-                const filtered = masterWorkerList[dept].filter(worker => {
-                    const wName = typeof worker === 'string' ? worker : worker.name;
-                    return wName.toLowerCase().includes(inputVal);
-                });
-
-                if (filtered.length > 0) {
-                    filtered.forEach(worker => {
-                        const wName = typeof worker === 'string' ? worker : worker.name;
-                        const div = document.createElement('div');
-                        div.className = 'dropdown-item';
-                        div.textContent = wName;
-                        div.onclick = () => selectWorker(wName);
-                        dropdown.appendChild(div);
-                    });
-                } else {
-                    const div = document.createElement('div');
-                    div.className = 'dropdown-item no-results';
-                    div.textContent = 'No matching workers';
-                    dropdown.appendChild(div);
-                }
-            }
-        }
-
-        function selectWorker(name) {
-            document.getElementById('workerSelect').value = name;
-            document.getElementById('customWorkerDropdown').classList.remove('show');
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.dropdown-wrapper')) {
-                const dropdown = document.getElementById('customWorkerDropdown');
-                if (dropdown) dropdown.classList.remove('show');
-            }
-        });
-
-        function toggleAdminLogin() {
-            if (isAdmin) {
-                document.getElementById('logoutModal').classList.add('show');
-            } else {
-                document.getElementById('loginModal').classList.add('show');
-            }
-        }
-
-        function performLogout() {
-            isAdmin = false;
-            document.getElementById('btnAdminNav').textContent = 'Admin Portal';
-            document.getElementById('welcomeGreeting').textContent = 'Welcome back!';
-            document.getElementById('workerPasswordGroup').style.display = 'flex';
-            document.getElementById('workerPassword').value = '';
-            const loginLink = document.querySelector('.admin-login-link');
-            if (loginLink) loginLink.textContent = 'Login as Administrator';
-            document.getElementById('btnAdminVerify').style.display = 'none';
-            closeModal('logoutModal');
-            showToast('Logged out successfully');
-        }
-
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-
-        function handleAdminLogin() {
-            const id = document.getElementById('adminId').value;
-            const pw = document.getElementById('adminPassword').value;
-
-            const admin = masterAdmins.find(a => a.name === id);
-            if (admin && admin.password === pw) {
-                isAdmin = true;
-                closeModal('loginModal');
-                document.getElementById('btnAdminNav').textContent = 'Admin (Active)';
-                document.getElementById('welcomeGreeting').textContent = 'Admin Portal Active';
-                document.getElementById('workerPasswordGroup').style.display = 'none';
-                const loginLink = document.querySelector('.admin-login-link');
-                if (loginLink) loginLink.textContent = 'Logout Administrator';
-                showToast('Welcome Administrator!');
-            } else {
-                showToast('Invalid credentials', 'error');
-            }
-        }
-
-        async function showStatusModal() {
-            const dept = document.getElementById('departmentSelect').value;
-            const mon = document.getElementById('monthSelect').value;
-            const yr = document.getElementById('yearSelect').value;
-            if (!dept) { showToast('Select Department first', 'error'); return; }
-
-            showLoading('Fetching status...');
-            document.getElementById('statusSubtitle').textContent = `${dept} · ${mon} ${yr}`;
-            try {
-                const res = await fetch(`${SCRIPT_URL}?action=getStatus&department=${encodeURIComponent(dept)}&monthYear=${encodeURIComponent(mon + ' ' + yr)}`).then(r => r.json());
-                hideLoading();
-                if (res.status === 'success') {
-                    let html = '<table class="status-table"><thead><tr><th>Worker Name</th><th>Status</th><th>Action</th></tr></thead><tbody>';
-                    res.data.forEach(item => {
-                        const badgeClass = `badge-${item.status.toLowerCase()}`;
-                        let actions = '-';
-                        if (isAdmin && (item.status === 'Submitted' || item.status === 'Verified')) {
-                            actions = `<div style="display: flex; gap: 5px; justify-content: flex-start;"><button onclick="viewWorkerFromStatus('${item.name}')" style="background:var(--accent-primary); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">View</button>`;
-                            if (item.status === 'Verified') {
-                                actions += `<button onclick="handleResubmit('${item.name}')" style="background:var(--accent-orange); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Resubmit</button>`;
-                            }
-                            actions += `</div>`;
-                        }
-                        html += `<tr><td>${item.name}</td><td><span class="badge ${badgeClass}">${item.status}</span></td><td>${actions}</td></tr>`;
-                    });
-                    html += '</tbody></table>';
-                    document.getElementById('statusListContent').innerHTML = html;
-                    document.getElementById('statusModal').classList.add('show');
-                }
-            } catch (e) { hideLoading(); showToast('Error fetching status', 'error'); }
-        }
-
-        function viewWorkerFromStatus(name) {
-            document.getElementById('workerSelect').value = name;
-            closeModal('statusModal');
-            loadTimesheet();
-        }
-
-        async function handleResubmit(name) {
-            if (!confirm(`Allow ${name} to edit their timesheet again?`)) return;
-            showLoading('Unlocking...');
-            const dept = document.getElementById('departmentSelect').value;
-            const mon = document.getElementById('monthSelect').value;
-            const yr = document.getElementById('yearSelect').value;
-            try {
-                const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'resubmitWorker', department: dept, monthYear: mon + ' ' + yr, workerName: name }) }).then(r => r.json());
-                hideLoading(); showToast(res.message); showStatusModal();
-            } catch (e) { hideLoading(); showToast('Error', 'error'); }
-        }
-
-        async function loadTimesheet() {
-            const dept = document.getElementById('departmentSelect').value;
-            const workerInput = document.getElementById('workerSelect');
-            const name = workerInput.value.trim();
-            const mon = document.getElementById('monthSelect').value;
-            const yr = document.getElementById('yearSelect').value;
-
-            if (!dept || !name) { showToast('Select department and worker', 'error'); return; }
-
-            if (!isAdmin) {
-                const workerList = masterWorkerList[dept] || [];
-                const workerObj = workerList.find(w => (typeof w === 'string' ? w : w.name) === name);
-                if (!workerObj) {
-                    showToast('Invalid worker name', 'error');
-                    return;
-                }
-                const expectedPwd = typeof workerObj === 'string' ? '' : (workerObj.password || '');
-                const enteredPwd = document.getElementById('workerPassword').value;
-                if (expectedPwd && expectedPwd.trim() !== '') {
-                    if (enteredPwd !== expectedPwd) {
-                        showToast('Incorrect worker password', 'error');
-                        return;
-                    }
-                }
-            }
-
-            if (entryMode === 'day') {
-                const dVal = document.getElementById('dateSelect').value;
-                if (!dVal) { showToast('Select date', 'error'); return; }
-                const sDate = new Date(dVal);
-                currentMonth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][sDate.getMonth()];
-                currentYear = sDate.getFullYear().toString();
-                selectedDayOnly = sDate.getDate();
-            } else {
-                currentMonth = mon; currentYear = yr; selectedDayOnly = null;
-            }
-
-            currentDepartment = dept; currentWorker = name; daysInMonth = getDaysInMonth(currentMonth, currentYear);
-
-            showLoading('Loading...');
-            try {
-                const sheetName = `${name}-${currentMonth}-${currentYear}`;
-                const url = `${SCRIPT_URL}?action=getData&department=${encodeURIComponent(dept)}&monthYear=${encodeURIComponent(currentMonth + ' ' + currentYear)}&sheetName=${encodeURIComponent(sheetName)}`;
-                const res = await fetch(url).then(r => r.json());
-
-                isLocked = res.isLocked || false;
-                currentData = res.data || [];
-                buildSpreadsheet(currentData);
-
-                document.getElementById('btnSubmit').style.display = isLocked ? 'none' : 'block';
-                document.getElementById('btnAdminVerify').style.display = (isAdmin && !isLocked) ? 'flex' : 'none';
-
-                showSection('timesheet');
-                document.getElementById('timesheetTitle').textContent = `${name}'s Timesheet`;
-                document.getElementById('timesheetSubtitle').textContent = `${dept} · ${currentMonth} ${currentYear} ${isLocked ? '(LOCKED)' : ''}`;
-                hideLoading();
-            } catch (e) { hideLoading(); showSection('timesheet'); buildSpreadsheet(null); }
-        }
-
-        function buildSpreadsheet(data) {
-            const tbody = document.getElementById('spreadsheetBody');
-            const table = document.getElementById('spreadsheetTable');
-            const dayForm = document.getElementById('dayWiseForm');
-            const section = document.getElementById('timesheetSection');
-
-            tbody.innerHTML = '';
-            dayForm.innerHTML = '';
-
-            if (selectedDayOnly) {
-                // Day Wise - Vertical View
-                section.classList.add('vertical-mode');
-                table.style.display = 'none';
-                dayForm.style.display = 'grid';
-
-                const d = selectedDayOnly;
-                const mIdx = getMonthIndex(currentMonth);
-                const date = new Date(currentYear, mIdx, d), dName = getDayName(date), dStr = formatDate(d, currentMonth, currentYear);
-                const rD = data ? data.find(x => x.date === dStr) : null;
-
-                dayForm.innerHTML = `
-                    <div class="vertical-info-banner">
-                        <div class="vertical-info-item"><span>Worker</span><span>${currentWorker}</span></div>
-                        <div class="vertical-info-item"><span>Date</span><span>${dStr}</span></div>
-                        <div class="vertical-info-item"><span>Day</span><span>${dName}</span></div>
-                    </div>
-                    <div class="vertical-field-card"><label>Shift IN</label><input type='time' id='dayShiftIn_${d}' value='${rD ? rD.dayShiftIn || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Shift OUT</label><input type='time' id='dayShiftOut_${d}' value='${rD ? rD.dayShiftOut || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Client IN</label><input type='time' id='clientIn_${d}' value='${rD ? rD.clientIn || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Client OUT</label><input type='time' id='clientOut_${d}' value='${rD ? rD.clientOut || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Site Location 1</label><input type='text' id='siteLoc1_${d}' value='${rD ? rD.siteLoc1 || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Site Location 2</label><input type='text' id='siteLoc2_${d}' value='${rD ? rD.siteLoc2 || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>OT Hrs</label><input type='number' id='otHrs_${d}' step='0.5' value='${rD ? rD.otHrs || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Site Allowance Hrs</label><input type='number' id='siteAllowanceHrs_${d}' step='0.5' value='${rD ? rD.siteAllowanceHrs || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Travel Allowance</label><input type='number' id='travelAllowance_${d}' step='0.01' value='${rD ? rD.travelAllowance || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Other Allowance</label><input type='number' id='otherAllowance_${d}' step='0.01' value='${rD ? rD.otherAllowance || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card"><label>Bus Allowance</label><input type='number' id='busAllowance_${d}' step='0.01' value='${rD ? rD.busAllowance || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                    <div class="vertical-field-card" style="grid-column: 1 / -1;"><label>Remarks</label><input type='text' id='remarks_${d}' value='${rD ? rD.remarks || '' : ''}' ${isLocked ? 'readonly' : ''}></div>
-                `;
-
-                // Set focus
-                setTimeout(() => {
-                    const firstInput = document.getElementById(`dayShiftIn_${d}`);
-                    if (firstInput) firstInput.focus();
-                }, 100);
-
-            } else {
-                // Month Wise - Horizontal View
-                section.classList.remove('vertical-mode');
-                table.style.display = 'table';
-                dayForm.style.display = 'none';
-
-                const mIdx = getMonthIndex(currentMonth);
-                for (let d = 1; d <= daysInMonth; d++) {
-                    const date = new Date(currentYear, mIdx, d), dName = getDayName(date), dStr = formatDate(d, currentMonth, currentYear), isSun = date.getDay() === 0, isSat = date.getDay() === 6;
-                    const tr = document.createElement('tr');
-                    if (isSun) tr.classList.add('row-sunday'); else if (isSat) tr.classList.add('row-saturday');
-                    const rD = data ? data.find(x => x.date === dStr) : null;
-                    tr.innerHTML = `<td class="${isLocked ? 'locked' : ''}">${d}</td><td class="${isLocked ? 'locked' : ''}">${currentWorker}</td><td class="${isLocked ? 'locked' : ''}">${dStr}</td><td class='${isSun ? 'sunday' : isSat ? 'saturday' : ''} ${isLocked ? 'locked' : ''}'>${dName}</td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='time' id='dayShiftIn_${d}' value='${rD ? rD.dayShiftIn || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='time' id='dayShiftOut_${d}' value='${rD ? rD.dayShiftOut || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='time' id='clientIn_${d}' value='${rD ? rD.clientIn || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='time' id='clientOut_${d}' value='${rD ? rD.clientOut || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='text' id='siteLoc1_${d}' value='${rD ? rD.siteLoc1 || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='text' id='siteLoc2_${d}' value='${rD ? rD.siteLoc2 || '' : ''}' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='otHrs_${d}' step='0.5' value='${rD ? rD.otHrs || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='siteAllowanceHrs_${d}' step='0.5' value='${rD ? rD.siteAllowanceHrs || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='travelAllowance_${d}' step='0.01' value='${rD ? rD.travelAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='otherAllowance_${d}' step='0.01' value='${rD ? rD.otherAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='number' id='busAllowance_${d}' step='0.01' value='${rD ? rD.busAllowance || '' : ''}' oninput='updateTotals()' ${isLocked ? 'readonly' : ''}></td>
-                        <td class="${isLocked ? 'locked' : ''}"><input type='text' id='remarks_${d}' value='${rD ? rD.remarks || '' : ''}' ${isLocked ? 'readonly' : ''}></td>`;
-                    tbody.appendChild(tr);
-                }
-                buildTotalsRow(); updateTotals();
-            }
-        }
-
-        function buildTotalsRow() {
-            document.getElementById('spreadsheetFoot').innerHTML = `<tr><td colspan='4'>TOTAL</td><td></td><td></td><td></td><td></td><td></td><td></td><td id='totalOtHrs'>0</td><td id='totalSiteAllowanceHrs'>0</td><td id='totalTravelAllowance'>$0.00</td><td id='totalOtherAllowance'>$0.00</td><td id='totalBusAllowance'>$0.00</td><td id='totalTimesheets' style='font-size:0.7rem;'></td></tr>`;
-        }
-
-        function updateTotals() {
-            let ot = 0, sa = 0, ta = 0, oa = 0, ba = 0, count = 0;
-            for (let d = 1; d <= daysInMonth; d++) {
-                const el = id => document.getElementById(`${id}_${d}`);
-                if (!el('otHrs')) continue;
-                ot += parseFloat(el('otHrs').value) || 0; sa += parseFloat(el('siteAllowanceHrs').value) || 0;
-                ta += parseFloat(el('travelAllowance').value) || 0; oa += parseFloat(el('otherAllowance').value) || 0; ba += parseFloat(el('busAllowance').value) || 0;
-                if (el('clientIn').value || el('clientOut').value) count++;
-            }
-            document.getElementById('totalOtHrs').textContent = ot.toFixed(1);
-            document.getElementById('totalSiteAllowanceHrs').textContent = sa.toFixed(1);
-            document.getElementById('totalTravelAllowance').textContent = `$${ta.toFixed(2)}`;
-            document.getElementById('totalOtherAllowance').textContent = `$${oa.toFixed(2)}`;
-            document.getElementById('totalBusAllowance').textContent = `$${ba.toFixed(2)}`;
-            document.getElementById('totalTimesheets').innerHTML = `CLIENT TIMESHEETS:<br>${count}`;
-        }
-
-        function getTableRows() {
-            let rows = JSON.parse(JSON.stringify(currentData || []));
-            const mIdx = getMonthIndex(currentMonth);
-            if (rows.length === 0) {
-                for (let d = 1; d <= daysInMonth; d++) {
-                    rows.push({
-                        name: currentWorker, date: formatDate(d, currentMonth, currentYear),
-                        day: getDayName(new Date(currentYear, mIdx, d)),
-                        dayShiftIn: '', dayShiftOut: '', clientIn: '', clientOut: '',
-                        siteLoc1: '', siteLoc2: '', otHrs: '', siteAllowanceHrs: '',
-                        travelAllowance: '', otherAllowance: '', busAllowance: '', remarks: ''
-                    });
-                }
-            }
-            for (let d = 1; d <= daysInMonth; d++) {
-                const el = id => document.getElementById(`${id}_${d}`);
-                if (el('dayShiftIn')) {
-                    const dStr = formatDate(d, currentMonth, currentYear);
-                    let row = rows.find(r => r.date === dStr);
-                    if (!row) {
-                        row = { name: currentWorker, date: dStr, day: getDayName(new Date(currentYear, mIdx, d)) };
-                        rows.push(row);
-                    }
-                    row.dayShiftIn = el('dayShiftIn').value;
-                    row.dayShiftOut = el('dayShiftOut').value;
-                    row.clientIn = el('clientIn').value;
-                    row.clientOut = el('clientOut').value;
-                    row.siteLoc1 = el('siteLoc1').value;
-                    row.siteLoc2 = el('siteLoc2').value;
-                    row.otHrs = el('otHrs').value;
-                    row.siteAllowanceHrs = el('siteAllowanceHrs').value;
-                    row.travelAllowance = el('travelAllowance').value;
-                    row.otherAllowance = el('otherAllowance').value;
-                    row.busAllowance = el('busAllowance').value;
-                    row.remarks = el('remarks').value;
-                }
-            }
-            return rows;
-        }
-
-        async function submitTimesheet() {
-            showLoading('Saving...');
-            const payload = { action: 'saveData', department: currentDepartment, monthYear: `${currentMonth} ${currentYear}`, sheetName: `${currentWorker}-${currentMonth}-${currentYear}`, workerName: currentWorker, rows: getTableRows() };
-            try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }); hideLoading(); showToast('Saved Successfully!'); }
-            catch (e) { hideLoading(); showToast('Error saving', 'error'); }
-        }
-
-        async function handleSaveAndExit() {
-            await submitTimesheet();
-            exitTimesheet();
-        }
-
-        async function handleVerify() {
-            const vName = document.getElementById('verifierName').value;
-            if (!vName) { showToast('Enter Verifier Name', 'error'); return; }
-            
-            showLoading('Saving & Verifying...');
-            
-            // 1. Save Data First
-            const savePayload = { action: 'saveData', department: currentDepartment, monthYear: `${currentMonth} ${currentYear}`, sheetName: `${currentWorker}-${currentMonth}-${currentYear}`, workerName: currentWorker, rows: getTableRows() };
-            try { 
-                const saveRes = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(savePayload) }).then(r => r.json());
-                if (saveRes.status !== 'success') {
-                    hideLoading(); showToast(saveRes.message || 'Error saving before verify', 'error'); return;
-                }
-            } catch (e) { hideLoading(); showToast('Error saving data', 'error'); return; }
-
-            // 2. Verify Data
-            const verifyPayload = { action: 'verifyWorker', department: currentDepartment, monthYear: `${currentMonth} ${currentYear}`, workerName: currentWorker, verifierName: vName, rows: getTableRows() };
-            try {
-                const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(verifyPayload) }).then(r => r.json());
-                hideLoading(); 
-                if (res.status === 'success') { 
-                    showToast('Saved & Verified successfully!'); 
-                    loadTimesheet(); 
-                } else {
-                    showToast(res.message || 'Error verifying', 'error');
-                }
-            } catch (e) { hideLoading(); showToast('Error verifying data', 'error'); }
-        }
-
-        async function handleForgotPassword(type) {
-            let dept, name;
-            if (type === 'admin') {
-                dept = 'Admin';
-                name = document.getElementById('adminId').value.trim();
-                if (!name) { showToast('Enter Admin User ID first', 'error'); return; }
-            } else {
-                dept = document.getElementById('departmentSelect').value;
-                name = document.getElementById('workerSelect').value.trim();
-                if (!dept || !name) { showToast('Select department and name first', 'error'); return; }
-            }
-
-            if (!confirm(`Send current password for ${name} to registered email?`)) return;
-
-            showLoading('Sending email...');
-            try {
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'forgotPassword', department: dept, workerName: name })
-                }).then(r => r.json());
-                hideLoading();
-                if (res.status === 'success') showToast(res.message);
-                else showToast(res.message, 'error');
-            } catch (e) { hideLoading(); showToast('Connection error', 'error'); }
-        }
-
-        function openAdminChangePasswordModal() {
-            const name = document.getElementById('adminId').value.trim();
-            if (!name) { showToast('Enter Admin User ID first', 'error'); return; }
-
-            const admin = masterAdmins.find(a => a.name === name);
-            if (!admin) { showToast('Invalid Admin User ID', 'error'); return; }
-
-            window._pendingCp = { dept: 'Admin', name: name, expected: admin.password };
-
-            document.getElementById('cpOldPassword').value = '';
-            document.getElementById('cpNewPassword').value = '';
-            document.getElementById('cpConfirmPassword').value = '';
-            document.getElementById('changePasswordModal').classList.add('show');
-        }
-
-        function openChangePasswordModal() {
-            const dept = document.getElementById('departmentSelect').value;
-            const name = document.getElementById('workerSelect').value.trim();
-            if (!dept || !name) {
-                showToast('Select department and worker first', 'error');
-                return;
-            }
-
-            const workerList = masterWorkerList[dept] || [];
-            const workerObj = workerList.find(w => (typeof w === 'string' ? w : w.name) === name);
-            if (!workerObj) {
-                showToast('Invalid worker name', 'error');
-                return;
-            }
-
-            window._pendingCp = {
-                dept: dept,
-                name: name,
-                expected: typeof workerObj === 'string' ? '' : (workerObj.password || '')
-            };
-
-            document.getElementById('cpOldPassword').value = '';
-            document.getElementById('cpNewPassword').value = '';
-            document.getElementById('cpConfirmPassword').value = '';
-            document.getElementById('changePasswordModal').classList.add('show');
-        }
-
-        async function submitPasswordChange() {
-            if (!window._pendingCp) return;
-            const { dept, name, expected } = window._pendingCp;
-
-            const oldPwd = document.getElementById('cpOldPassword').value;
-            const newPwd = document.getElementById('cpNewPassword').value;
-            const confPwd = document.getElementById('cpConfirmPassword').value;
-
-            if (!newPwd || newPwd.trim() === '') {
-                showToast('Enter a valid new password', 'error');
-                return;
-            }
-            if (newPwd !== confPwd) {
-                showToast('New passwords do not match', 'error');
-                return;
-            }
-
-            if (expected && expected.trim() !== '') {
-                if (oldPwd !== expected) {
-                    showToast('Incorrect old password', 'error');
-                    return;
-                }
-            }
-
-            showLoading('Updating password...');
-            try {
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'changePassword', department: dept, workerName: name, oldPassword: oldPwd, newPassword: newPwd })
-                }).then(r => r.json());
-
-                hideLoading();
-                if (res.status === 'success') {
-                    showToast('Password updated successfully!');
-                    closeModal('changePasswordModal');
-                    if (dept !== 'Admin') {
-                        document.getElementById('workerPassword').value = newPwd;
-                    } else {
-                        document.getElementById('adminPassword').value = newPwd;
-                    }
-                    refreshWorkerListFromMaster();
-                } else {
-                    showToast(res.message || 'Error updating password', 'error');
-                }
-            } catch (e) {
-                hideLoading();
-                showToast('Error connecting to server', 'error');
-            }
-        }
-
-        function goBack() {
-            if (isLocked) {
-                exitTimesheet();
-                return;
-            }
-            document.getElementById('exitConfirmModal').classList.add('show');
-        }
-
-
-        function exitTimesheet() {
-            if (isFullscreen) toggleFullscreen();
-            showSection('home');
-            document.getElementById('workerPassword').value = '';
-        }
-
-        // ===== ZOOM FUNCTIONALITY =====
-        let currentZoom = 100;
-        function applyZoom() {
-            const slider = document.getElementById('zoomSlider');
-            currentZoom = parseInt(slider.value);
-            document.getElementById('zoomText').textContent = currentZoom + '%';
-            
-            const table = document.getElementById('spreadsheetTable');
-            if (table) {
-                table.style.zoom = currentZoom / 100;
-            }
-            
-            const dayForm = document.getElementById('dayWiseForm');
-            if (dayForm) {
-                dayForm.style.zoom = currentZoom / 100;
-            }
-        }
-        
-        function zoomIn() {
-            const slider = document.getElementById('zoomSlider');
-            if(slider.value < 150) {
-                slider.value = parseInt(slider.value) + 10;
-                applyZoom();
-            }
-        }
-
-        function zoomOut() {
-            const slider = document.getElementById('zoomSlider');
-            if(slider.value > 50) {
-                slider.value = parseInt(slider.value) - 10;
-                applyZoom();
-            }
-        }
-
-        // ===== FULLSCREEN =====
-        let isFullscreen = false;
-        function toggleFullscreen() {
-            const section = document.getElementById('timesheetSection'), header = document.querySelector('.header'), footer = document.querySelector('.footer'), icon = document.getElementById('fullscreenIcon');
-            isFullscreen = !isFullscreen;
-            if (isFullscreen) {
-                section.classList.add('fullscreen-mode');
-                if (header) header.style.display = 'none';
-                if (footer) footer.style.display = 'none';
-                icon.innerHTML = '<polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line>';
-            } else {
-                section.classList.remove('fullscreen-mode');
-                if (header) header.style.display = '';
-                if (footer) footer.style.display = '';
-                icon.innerHTML = '<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>';
-            }
-        }
-
-        // ===== KEYBOARD NAVIGATION =====
-        const EDITABLE_COL_INDICES = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-        document.addEventListener('keydown', function (e) {
-            const active = document.activeElement;
-            if (!active || !active.closest('.spreadsheet tbody')) return;
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab'].indexOf(e.key) === -1) return;
-
-            const td = active.closest('td'), tr = td.parentElement, tbody = tr.parentElement;
-            const cellIndex = Array.from(tr.children).indexOf(td), rowIndex = Array.from(tbody.children).indexOf(tr), totalRows = tbody.children.length;
-            const currentEditIdx = EDITABLE_COL_INDICES.indexOf(cellIndex);
-            let targetRow, targetInput;
-
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                targetRow = tbody.children[rowIndex + 1];
-                if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                targetRow = tbody.children[rowIndex - 1];
-                if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                if (currentEditIdx < EDITABLE_COL_INDICES.length - 1) targetInput = tr.children[EDITABLE_COL_INDICES[currentEditIdx + 1]]?.querySelector('input, select');
-            } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                if (currentEditIdx > 0) targetInput = tr.children[EDITABLE_COL_INDICES[currentEditIdx - 1]]?.querySelector('input, select');
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                if (e.shiftKey) {
-                    targetRow = tbody.children[rowIndex - 1];
-                    if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
-                } else {
-                    if (rowIndex < totalRows - 1) targetInput = tbody.children[rowIndex + 1].children[cellIndex]?.querySelector('input, select');
-                    else if (currentEditIdx < EDITABLE_COL_INDICES.length - 1) targetInput = tbody.children[0].children[EDITABLE_COL_INDICES[currentEditIdx + 1]]?.querySelector('input, select');
-                }
-            } else if (e.key === 'Tab') {
-                if (!e.shiftKey && currentEditIdx === EDITABLE_COL_INDICES.length - 1) {
-                    e.preventDefault();
-                    targetRow = tbody.children[rowIndex + 1];
-                    if (targetRow) targetInput = targetRow.children[EDITABLE_COL_INDICES[0]]?.querySelector('input, select');
-                } else if (e.shiftKey && currentEditIdx === 0) {
-                    e.preventDefault();
-                    targetRow = tbody.children[rowIndex - 1];
-                    if (targetRow) targetInput = targetRow.children[EDITABLE_COL_INDICES[EDITABLE_COL_INDICES.length - 1]]?.querySelector('input, select');
-                }
-            }
-
-            if (targetInput) {
-                targetInput.focus();
-                targetInput.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
-            }
-        });
-
-        // Global shortcut for fullscreen
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'F11') {
-                const section = document.getElementById('timesheetSection');
-                if (section && !section.classList.contains('hidden')) { e.preventDefault(); toggleFullscreen(); }
-            }
-        });
-    </script>
-</body>
-
-</html>
+                                    style="font-size: 0.75rem; c
