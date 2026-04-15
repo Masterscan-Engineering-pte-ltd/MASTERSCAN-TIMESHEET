@@ -85,6 +85,34 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color var(--transition-normal);
+        }
+
+        body.admin-active {
+            --bg-primary: #d188b1;
+            --accent-primary: #a64477;
+            --accent-secondary: #8a3360;
+            --accent-glow: rgba(166, 68, 119, 0.2);
+            --text-accent: #a64477;
+            --border-focus: #a64477;
+            --cell-focus: #a64477;
+            background-color: var(--bg-primary) !important;
+            transition: all var(--transition-normal);
+        }
+
+        body.admin-active #welcomeGreeting {
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        body.admin-active .welcome-text p {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        body.admin-active .current-timestamp {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(4px);
         }
 
         /* ===== SCROLLBAR ===== */
@@ -1894,6 +1922,7 @@
 
         function performLogout() {
             isAdmin = false;
+            document.body.classList.remove('admin-active');
 
             // Clean up UI instantly
             document.getElementById('btnAdminNav').textContent = 'Admin Portal';
@@ -1935,6 +1964,7 @@
             const admin = masterAdmins.find(a => a.name === id);
             if (admin && admin.password === pw) {
                 isAdmin = true;
+                document.body.classList.add('admin-active');
                 closeModal('loginModal');
                 document.getElementById('btnAdminNav').textContent = 'Admin Portal Logout';
                 document.getElementById('welcomeGreeting').textContent = 'Admin Portal Active';
