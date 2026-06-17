@@ -1,6 +1,6 @@
 // ===== CONFIGURATION =====
 // IMPORTANT: Replace this URL with your deployed Google Apps Script Web App URL
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMdXjaNeqY70tHgr7H_OducbNMj7y4J6NFMuBCOS5gZcFkTwtzTHHgBcmYSuJQJJ8F_w/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyAfDeE-dM6fRXXH3VkKti6Qux2aO-E4oYroaoyMgNiRNXEuJhg7PcobO7NfGhnohItw/exec';
 
 // ===== STATE =====
 let currentWorker = '';
