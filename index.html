@@ -662,6 +662,10 @@
         .header-section-center {
             text-align: center;
             flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
         }
 
         .header-section-center h2 {
@@ -678,6 +682,58 @@
             color: var(--text-muted);
             margin: 1px 0 0;
             font-weight: 600;
+        }
+
+        .accounts-comment-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .ac-badge-title {
+            font-weight: 800;
+            color: #334155;
+            text-transform: capitalize;
+        }
+
+        .ac-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.76rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ac-badge-green {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+        .ac-badge-green strong {
+            color: #047857;
+            font-weight: 800;
+        }
+
+        .ac-badge-red {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .ac-badge-red strong {
+            color: #b91c1c;
+            font-weight: 800;
         }
 
         .header-section-right {
@@ -1405,7 +1461,8 @@
             <div class="current-timestamp" id="currentDateTime"></div>
             <div class="nav-tabs">
                 <button class="nav-btn active" onclick="showSection('home')">Home</button>
-                <button class="nav-btn" id="btnAdminNav" onclick="toggleAdminLogin()">Admin Portal</button>
+                <button class="nav-btn" id="btnAdminNav" onclick="toggleAdminLogin()">Supervisor Portal</button>
+                <button class="nav-btn" onclick="window.location.href='accounts.html'">Accounts Portal</button>
                 <button class="nav-btn" onclick="showStatusModal()">Submission Status</button>
             </div>
         </div>
@@ -1433,7 +1490,7 @@
                             <div class="option-icon">D</div><strong>Day Wise</strong>
                         </button>
                     </div>
-                    <a class="admin-login-link" onclick="toggleAdminLogin()">Login as Administrator</a>
+                    <a class="admin-login-link" onclick="toggleAdminLogin()">Login as Supervisor</a>
                 </div>
                 <div class="dashboard-card form-card">
                     <div class="card-header">
@@ -1507,10 +1564,10 @@
         </div>
     </section>
 
-    <!-- Admin Login Modal -->
+    <!-- Supervisor Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content" style="max-width: 400px;">
-            <h3>Admin Login</h3>
+            <h3>Supervisor Login</h3>
             <p style="margin-bottom: 20px; color: var(--text-secondary);">Access restricted area</p>
             <div class="form-group" style="margin-bottom: 15px;">
                 <label>User ID</label>
@@ -1595,13 +1652,15 @@
 
     <!-- Status Modal -->
     <div id="statusModal" class="modal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+        <div class="modal-content" style="max-width: 800px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h3>Submission Status</h3>
+                    <h3 style="font-size: 1.25rem;">Submission Status</h3>
                     <p id="statusSubtitle" style="color: var(--text-secondary); font-size: 0.9rem;"></p>
                 </div>
-                <button class="btn-back" onclick="closeModal('statusModal')">Close</button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="btn-back" style="font-size: 0.8rem; padding: 6px 14px;" onclick="closeModal('statusModal')">Close</button>
+                </div>
             </div>
             <div id="statusListContent">
                 <!-- Status table injected here -->
@@ -1630,7 +1689,7 @@
     <!-- Logout Modal -->
     <div id="logoutModal" class="modal">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <h3 style="margin-bottom: 10px;">Admin Actions</h3>
+            <h3 style="margin-bottom: 10px;">Supervisor Actions</h3>
             <p style="margin-bottom: 25px; color: var(--text-secondary);">What would you like to do?</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
                 <button class="btn-back" style="flex:1" onclick="closeModal('logoutModal')">Cancel</button>
@@ -1675,7 +1734,14 @@
 
             <!-- Center Info -->
             <div class="header-section-center">
-                <h2 id="timesheetTitle">ADHIMOOLAM GANESH's Timesheet</h2>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                    <h2 id="timesheetTitle">ADHIMOOLAM GANESH's Timesheet</h2>
+                    <div id="accountsCommentBox" class="accounts-comment-pill">
+                        <span class="ac-badge-title">Accounts Comment:</span>
+                        <span class="ac-badge ac-badge-green">submitted timesheet: <strong id="acSubmittedVal">0</strong></span>
+                        <span class="ac-badge ac-badge-red">not submitted timesheet: <strong id="acNotSubmittedVal">0</strong></span>
+                    </div>
+                </div>
                 <p id="timesheetSubtitle">Dept 1 · March 2026</p>
             </div>
 
@@ -1730,7 +1796,14 @@
             </button>
             <div class="header-section-center"
                 style="border: 1px solid #e2e8f0; padding: 10px 30px; background: #f1f5f9; border-radius: 4px;">
-                <h2 id="verticalTimesheetTitle">ADHIMOOLAM GANESH's Timesheet</h2>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                    <h2 id="verticalTimesheetTitle">ADHIMOOLAM GANESH's Timesheet</h2>
+                    <div id="verticalAccountsCommentBox" class="accounts-comment-pill">
+                        <span class="ac-badge-title">Accounts Comment:</span>
+                        <span class="ac-badge ac-badge-green">submitted timesheet: <strong id="vacSubmittedVal">0</strong></span>
+                        <span class="ac-badge ac-badge-red">not submitted timesheet: <strong id="vacNotSubmittedVal">0</strong></span>
+                    </div>
+                </div>
                 <p id="verticalTimesheetSubtitle">Dept 1 · March 2026</p>
             </div>
             <div style="width: 100px;"></div> <!-- Spacer -->
@@ -1761,7 +1834,7 @@
             setDefaultMonthYear();
             updateClock();
             setInterval(updateClock, 60000);
-            refreshWorkerListFromMaster();
+            rfcCCMt9jxJsDqTBXGeaCrr616tdvW3emh();
 
             // Set up exit modal handlers
             document.getElementById('btnExitSave').onclick = async () => {
@@ -1802,28 +1875,47 @@
             document.getElementById('timesheetSection').classList.toggle('hidden', id !== 'timesheet');
         }
 
-        async function refreshWorkerListFromMaster() {
+        let currentAdminUser = null;
+
+        async function rfcCCMt9jxJsDqTBXGeaCrr616tdvW3emh() {
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=getWorkerList`).then(r => r.json());
                 if (res.status === 'success') {
                     masterWorkerList = res.data;
                     masterAdmins = res.admins || [];
-
-                    // Dynamically populate department dropdown
-                    const deptSelect = document.getElementById('departmentSelect');
-                    const currentVal = deptSelect.value;
-                    deptSelect.innerHTML = '<option value="">Select Department</option>';
-                    Object.keys(masterWorkerList).forEach(dept => {
-                        const opt = document.createElement('option');
-                        opt.value = dept;
-                        opt.textContent = dept;
-                        deptSelect.appendChild(opt);
-                    });
-                    if (currentVal) deptSelect.value = currentVal;
-
-                    loadWorkerList();
+                    populateDepartmentDropdown();
                 }
             } catch (e) { console.error('Master list fetch failed', e); }
+        }
+
+        function populateDepartmentDropdown() {
+            const deptSelect = document.getElementById('departmentSelect');
+            if (!deptSelect) return;
+            const currentVal = deptSelect.value;
+            deptSelect.innerHTML = '<option value="">Select Department</option>';
+
+            let availableDepts = Object.keys(masterWorkerList).filter(dept => !dept.toLowerCase().includes('accounts'));
+
+            if (isAdmin && currentAdminUser && currentAdminUser.allowedDepts && !currentAdminUser.allowedDepts.includes('ALL')) {
+                availableDepts = availableDepts.filter(dept => currentAdminUser.allowedDepts.includes(dept));
+            }
+
+            availableDepts.forEach(dept => {
+                const opt = document.createElement('option');
+                opt.value = dept;
+                opt.textContent = dept;
+                deptSelect.appendChild(opt);
+            });
+
+            if (availableDepts.length === 1) {
+                deptSelect.value = availableDepts[0];
+            } else if (availableDepts.includes(currentVal)) {
+                deptSelect.value = currentVal;
+            } else {
+                deptSelect.value = '';
+            }
+
+            loadWorkerList();
         }
 
         function loadWorkerList() {
@@ -1846,7 +1938,7 @@
                 btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
             } else {
                 el.type = 'password';
-                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
             }
         }
 
@@ -1914,16 +2006,17 @@
 
         function performLogout() {
             isAdmin = false;
+            currentAdminUser = null;
             document.body.classList.remove('admin-active');
 
             // Clean up UI instantly
-            document.getElementById('btnAdminNav').textContent = 'Admin Portal';
+            document.getElementById('btnAdminNav').textContent = 'Supervisor Portal';
             document.getElementById('welcomeGreeting').textContent = 'Welcome back!';
             document.getElementById('workerPasswordGroup').style.display = 'flex';
             document.getElementById('workerPassword').value = '';
 
             const loginLink = document.querySelector('.admin-login-link');
-            if (loginLink) loginLink.textContent = 'Login as Administrator';
+            if (loginLink) loginLink.textContent = 'Login as Supervisor';
 
             // Hide admin verification panels
             document.getElementById('btnAdminVerify').style.display = 'none';
@@ -1935,35 +2028,37 @@
             // Exit any active timesheet view
             exitTimesheet();
 
-            showToast('Logged out, closing session...');
+            // Repopulate all departments for normal worker selection
+            populateDepartmentDropdown();
 
-            // Attempt to close the tab
-            setTimeout(() => {
-                window.close();
-                // Fallback for browsers that block window.close()
-                if (!window.closed) {
-                    window.location.href = "about:blank";
-                }
-            }, 300);
+            showToast('Logged out of Supervisor');
         }
 
         function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
         function handleAdminLogin() {
-            const id = document.getElementById('adminId').value;
+            const id = document.getElementById('adminId').value.trim();
             const pw = document.getElementById('adminPassword').value;
 
-            const admin = masterAdmins.find(a => a.name === id);
-            if (admin && admin.password === pw) {
+            const admin = masterAdmins.find(a => a.name === id && String(a.password) === String(pw));
+            if (admin) {
                 isAdmin = true;
+                currentAdminUser = admin;
                 document.body.classList.add('admin-active');
                 closeModal('loginModal');
-                document.getElementById('btnAdminNav').textContent = 'Admin Portal Logout';
-                document.getElementById('welcomeGreeting').textContent = 'Admin Portal Active';
+                document.getElementById('btnAdminNav').textContent = 'Supervisor Portal Logout';
+                
+                let deptInfo = '';
+                if (admin.allowedDepts && !admin.allowedDepts.includes('ALL') && admin.allowedDepts.length > 0) {
+                    deptInfo = ' (' + admin.allowedDepts.join(', ') + ')';
+                }
+                document.getElementById('welcomeGreeting').textContent = 'Supervisor Portal Active' + deptInfo;
                 document.getElementById('workerPasswordGroup').style.display = 'none';
                 const loginLink = document.querySelector('.admin-login-link');
-                if (loginLink) loginLink.textContent = 'Logout Administrator';
-                showToast('Welcome Administrator!');
+                if (loginLink) loginLink.textContent = 'Logout Supervisor';
+
+                populateDepartmentDropdown();
+                showToast('Welcome Supervisor!');
             } else {
                 showToast('Invalid credentials', 'error');
             }
@@ -2008,15 +2103,47 @@
         }
 
         async function handleResubmit(name) {
-            if (!confirm(`Allow ${name} to edit their timesheet again?`)) return;
-            showLoading('Unlocking...');
+            if (!confirm(`Allow ${name} to edit their timesheet again? This will unlock the timesheet.`)) return;
+            showLoading('Unlocking timesheet...');
             const dept = document.getElementById('departmentSelect').value;
             const mon = document.getElementById('monthSelect').value;
             const yr = document.getElementById('yearSelect').value;
             try {
-                const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'resubmitWorker', department: dept, monthYear: mon + ' ' + yr, workerName: name }) }).then(r => r.json());
-                hideLoading(); showToast(res.message); showStatusModal();
-            } catch (e) { hideLoading(); showToast('Error', 'error'); }
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'resubmitWorker',
+                        department: dept,
+                        monthYear: `${mon} ${yr}`,
+                        workerName: name
+                    })
+                }).then(r => r.json());
+                hideLoading();
+                if (res.status === 'success') {
+                    showToast(res.message || 'Unlocked!');
+                    showStatusModal();
+                } else {
+                    showToast(res.message || 'Error unlocking', 'error');
+                }
+            } catch (e) {
+                hideLoading();
+                showToast('Error unlocking timesheet', 'error');
+            }
+        }
+
+        function updateAccountsCommentDisplay(stats) {
+            const subVal = stats ? (stats.submitted !== undefined ? stats.submitted : 0) : 0;
+            const notSubVal = stats ? (stats.notSubmitted !== undefined ? stats.notSubmitted : 0) : 0;
+
+            const elSub = document.getElementById('acSubmittedVal');
+            const elNotSub = document.getElementById('acNotSubmittedVal');
+            if (elSub) elSub.textContent = subVal;
+            if (elNotSub) elNotSub.textContent = notSubVal;
+
+            const velSub = document.getElementById('vacSubmittedVal');
+            const velNotSub = document.getElementById('vacNotSubmittedVal');
+            if (velSub) velSub.textContent = subVal;
+            if (velNotSub) velNotSub.textContent = notSubVal;
         }
 
         async function loadTimesheet() {
@@ -2069,6 +2196,19 @@
                 isLocked = res.isLocked || false;
                 currentData = res.data || [];
                 buildSpreadsheet(currentData);
+
+                // Update Accounts Comment
+                let stats = res.accountsComment;
+                if (!stats || (stats.submitted === 0 && stats.notSubmitted === 0)) {
+                    const cachedStr = localStorage.getItem(`accountsStats_${dept}_${currentMonth}_${currentYear}`);
+                    if (cachedStr) {
+                        try {
+                            const cached = JSON.parse(cachedStr);
+                            if (cached[name]) stats = cached[name];
+                        } catch(e) {}
+                    }
+                }
+                updateAccountsCommentDisplay(stats);
 
                 const btnSubmit = document.getElementById('btnHeaderSubmit');
                 const btnVerify = document.getElementById('btnHeaderVerify');
@@ -2330,7 +2470,7 @@
                     const expF17x14 = getVal('expF17x14');
                     const expFReshoot = getVal('expFReshoot');
                     const expFTotalEl = document.getElementById(`expFTotal_${d}`);
-                    
+
                     if (expFTotalEl) {
                         if (hasVal('expF4x10') || hasVal('expF4x15') || hasVal('expF17x14') || hasVal('expFReshoot')) {
                             expFTotalEl.value = expF4x10 + expF4x15 + expF17x14 + expFReshoot;
@@ -2597,7 +2737,7 @@
                     } else {
                         document.getElementById('adminPassword').value = newPwd;
                     }
-                    refreshWorkerListFromMaster();
+                    rfcCCMt9jxJsDqTBXGeaCrr616tdvW3emh();
                 } else {
                     showToast(res.message || 'Error updating password', 'error');
                 }
@@ -2674,54 +2814,157 @@
         }
 
         // ===== KEYBOARD NAVIGATION =====
-        let EDITABLE_COL_INDICES = [];
         document.addEventListener('keydown', function (e) {
             const active = document.activeElement;
-            if (!active || !active.closest('.spreadsheet tbody')) return;
+            if (!active) return;
+            
+            const td = active.closest('td');
+            if (!td) return;
+            const tr = td.parentElement;
+            const tbody = tr ? tr.parentElement : null;
+            if (!tbody || tbody.tagName !== 'TBODY') return;
+
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab'].indexOf(e.key) === -1) return;
 
-            const td = active.closest('td'), tr = td.parentElement, tbody = tr.parentElement;
-            const cellIndex = Array.from(tr.children).indexOf(td), rowIndex = Array.from(tbody.children).indexOf(tr), totalRows = tbody.children.length;
-            const currentEditIdx = EDITABLE_COL_INDICES.indexOf(cellIndex);
-            let targetRow, targetInput;
+            const rows = Array.from(tbody.children).filter(r => !r.classList.contains('header-row'));
+            const rowIndex = rows.indexOf(tr);
+            if (rowIndex === -1) return;
+
+            const cells = Array.from(tr.children);
+            const colIndex = cells.indexOf(td);
+            if (colIndex === -1) return;
+
+            let targetInput = null;
 
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                targetRow = tbody.children[rowIndex + 1];
-                if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
+                for (let r = rowIndex + 1; r < rows.length; r++) {
+                    const targetCell = rows[r].children[colIndex];
+                    if (targetCell) {
+                        const inp = targetCell.querySelector('input:not([readonly]):not([disabled]), select:not([disabled])') ||
+                                    targetCell.querySelector('input, select');
+                        if (inp && !inp.disabled) {
+                            targetInput = inp;
+                            break;
+                        }
+                    }
+                }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                targetRow = tbody.children[rowIndex - 1];
-                if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                if (currentEditIdx < EDITABLE_COL_INDICES.length - 1) targetInput = tr.children[EDITABLE_COL_INDICES[currentEditIdx + 1]]?.querySelector('input, select');
-            } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                if (currentEditIdx > 0) targetInput = tr.children[EDITABLE_COL_INDICES[currentEditIdx - 1]]?.querySelector('input, select');
+                for (let r = rowIndex - 1; r >= 0; r--) {
+                    const targetCell = rows[r].children[colIndex];
+                    if (targetCell) {
+                        const inp = targetCell.querySelector('input:not([readonly]):not([disabled]), select:not([disabled])') ||
+                                    targetCell.querySelector('input, select');
+                        if (inp && !inp.disabled) {
+                            targetInput = inp;
+                            break;
+                        }
+                    }
+                }
             } else if (e.key === 'Enter') {
                 e.preventDefault();
                 if (e.shiftKey) {
-                    targetRow = tbody.children[rowIndex - 1];
-                    if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
+                    for (let r = rowIndex - 1; r >= 0; r--) {
+                        const targetCell = rows[r].children[colIndex];
+                        if (targetCell) {
+                            const inp = targetCell.querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                            if (inp) { targetInput = inp; break; }
+                        }
+                    }
                 } else {
-                    if (rowIndex < totalRows - 1) targetInput = tbody.children[rowIndex + 1].children[cellIndex]?.querySelector('input, select');
-                    else if (currentEditIdx < EDITABLE_COL_INDICES.length - 1) targetInput = tbody.children[0].children[EDITABLE_COL_INDICES[currentEditIdx + 1]]?.querySelector('input, select');
+                    for (let r = rowIndex + 1; r < rows.length; r++) {
+                        const targetCell = rows[r].children[colIndex];
+                        if (targetCell) {
+                            const inp = targetCell.querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                            if (inp) { targetInput = inp; break; }
+                        }
+                    }
+                    if (!targetInput) {
+                        for (let c = colIndex + 1; c < cells.length; c++) {
+                            const inp = rows[0].children[c]?.querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                            if (inp) { targetInput = inp; break; }
+                        }
+                    }
+                }
+            } else if (e.key === 'ArrowLeft') {
+                let atStart = true;
+                if (typeof active.selectionStart === 'number' && typeof active.selectionEnd === 'number') {
+                    atStart = (active.selectionStart === 0 && active.selectionEnd === 0);
+                }
+                
+                if (atStart) {
+                    for (let c = colIndex - 1; c >= 0; c--) {
+                        const inp = cells[c].querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                        if (inp) {
+                            targetInput = inp;
+                            break;
+                        }
+                    }
+                    if (targetInput) {
+                        e.preventDefault();
+                    }
+                }
+            } else if (e.key === 'ArrowRight') {
+                let atEnd = true;
+                if (typeof active.selectionStart === 'number' && typeof active.selectionEnd === 'number') {
+                    const len = active.value ? active.value.length : 0;
+                    atEnd = (active.selectionStart === len && active.selectionEnd === len);
+                }
+
+                if (atEnd) {
+                    for (let c = colIndex + 1; c < cells.length; c++) {
+                        const inp = cells[c].querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                        if (inp) {
+                            targetInput = inp;
+                            break;
+                        }
+                    }
+                    if (targetInput) {
+                        e.preventDefault();
+                    }
                 }
             } else if (e.key === 'Tab') {
-                if (!e.shiftKey && currentEditIdx === EDITABLE_COL_INDICES.length - 1) {
-                    e.preventDefault();
-                    targetRow = tbody.children[rowIndex + 1];
-                    if (targetRow) targetInput = targetRow.children[EDITABLE_COL_INDICES[0]]?.querySelector('input, select');
-                } else if (e.shiftKey && currentEditIdx === 0) {
-                    e.preventDefault();
-                    targetRow = tbody.children[rowIndex - 1];
-                    if (targetRow) targetInput = targetRow.children[EDITABLE_COL_INDICES[EDITABLE_COL_INDICES.length - 1]]?.querySelector('input, select');
+                if (!e.shiftKey) {
+                    for (let c = colIndex + 1; c < cells.length; c++) {
+                        const inp = cells[c].querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                        if (inp) { targetInput = inp; break; }
+                    }
+                    if (!targetInput && rowIndex + 1 < rows.length) {
+                        const nextRowCells = Array.from(rows[rowIndex + 1].children);
+                        for (let c = 0; c < nextRowCells.length; c++) {
+                            const inp = nextRowCells[c].querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                            if (inp) { targetInput = inp; break; }
+                        }
+                    }
+                } else {
+                    for (let c = colIndex - 1; c >= 0; c--) {
+                        const inp = cells[c].querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                        if (inp) { targetInput = inp; break; }
+                    }
+                    if (!targetInput && rowIndex - 1 >= 0) {
+                        const prevRowCells = Array.from(rows[rowIndex - 1].children);
+                        for (let c = prevRowCells.length - 1; c >= 0; c--) {
+                            const inp = prevRowCells[c].querySelector('input:not([readonly]):not([disabled]), select:not([disabled])');
+                            if (inp) { targetInput = inp; break; }
+                        }
+                    }
                 }
+                if (targetInput) e.preventDefault();
             }
 
             if (targetInput) {
                 targetInput.focus();
+                if (e.key === 'ArrowLeft' && typeof targetInput.setSelectionRange === 'function' && targetInput.type !== 'number') {
+                    try {
+                        const len = targetInput.value ? targetInput.value.length : 0;
+                        targetInput.setSelectionRange(len, len);
+                    } catch(err) {}
+                } else if (e.key === 'ArrowRight' && typeof targetInput.setSelectionRange === 'function' && targetInput.type !== 'number') {
+                    try {
+                        targetInput.setSelectionRange(0, 0);
+                    } catch(err) {}
+                }
                 targetInput.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
             }
         });
