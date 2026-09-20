@@ -1,23 +1,35 @@
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyAfDeE-dM6fRXXH3VkKti6Qux2aO-E4oYroaoyMgNiRNXEuJhg7PcobO7NfGhnohItw/exec';
         let currentWorker = '', currentMonth = '', currentYear = '', currentData = [], daysInMonth = 0, entryMode = 'month', isAdmin = false, masterWorkerList = {}, masterAdmins = [], currentDepartment = '', isLocked = false, selectedDayOnly = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            setDefaultMonthYear();
-            updateClock();
-            setInterval(updateClock, 60000);
-            rfcCCMt9jxJsDqTBXGeaCrr616tdvW3emh();
+        function initApp() {
+    setDefaultMonthYear();
+    updateClock();
+    setInterval(updateClock, 60000);
+    9q2Vy1qVTYmbVYdxYXUbAMz3jnk4Rp41c1e19z8EnsTy();
 
-            // Set up exit modal handlers
-            document.getElementById('btnExitSave').onclick = async () => {
-                closeModal('exitConfirmModal');
-                await submitTimesheet();
-                exitTimesheet();
-            };
-            document.getElementById('btnExitNoSave').onclick = () => {
-                closeModal('exitConfirmModal');
-                exitTimesheet();
-            };
-        });
+    // Set up exit modal handlers
+    const btnSave = document.getElementById('btnExitSave');
+    if (btnSave) {
+        btnSave.onclick = async () => {
+            closeModal('exitConfirmModal');
+            await submitTimesheet();
+            exitTimesheet();
+        };
+    }
+    const btnNoSave = document.getElementById('btnExitNoSave');
+    if (btnNoSave) {
+        btnNoSave.onclick = () => {
+            closeModal('exitConfirmModal');
+            exitTimesheet();
+        };
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
         function updateClock() { const now = new Date(); const clockEl = document.getElementById('currentDateTime'); if (clockEl) clockEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
@@ -53,7 +65,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyAfDeE-dM6fRXXH3Vk
 
         let currentAdminUser = null;
 
-        async function rfcCCMt9jxJsDqTBXGeaCrr616tdvW3emh() {
+        async function 9q2Vy1qVTYmbVYdxYXUbAMz3jnk4Rp41c1e19z8EnsTy() {
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=getWorkerList`).then(r => r.json());
                 if (res.status === 'success') {
@@ -212,11 +224,30 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyAfDeE-dM6fRXXH3Vk
 
         function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-        function handleAdminLogin() {
+        async function handleAdminLogin() {
             const id = document.getElementById('adminId').value.trim();
             const pw = document.getElementById('adminPassword').value;
 
-            const admin = masterAdmins.find(a => a.name === id && String(a.password) === String(pw));
+            if (!id || !pw) {
+                showToast('Please enter User ID and Password', 'error');
+                return;
+            }
+
+            // If masterAdmins is not loaded yet, fetch it on the fly
+            if (!masterAdmins || masterAdmins.length === 0) {
+                showLoading('Checking Supervisor credentials...');
+                try {
+                    const res = await fetch(`${SCRIPT_URL}?action=getWorkerList`).then(r => r.json());
+                    if (res.status === 'success') {
+                        masterWorkerList = res.data || {};
+                        masterAdmins = res.admins || [];
+                        populateDepartmentDropdown();
+                    }
+                } catch(e) {}
+                hideLoading();
+            }
+
+            const admin = masterAdmins.find(a => (a.name || a.id || '').trim().toLowerCase() === id.toLowerCase() && String(a.password).trim() === String(pw).trim());
             if (admin) {
                 isAdmin = true;
                 currentAdminUser = admin;
@@ -240,36 +271,78 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyAfDeE-dM6fRXXH3Vk
             }
         }
 
-        async function showStatusModal() {
-            const dept = document.getElementById('departmentSelect').value;
-            const mon = document.getElementById('monthSelect').value;
-            const yr = document.getElementById('yearSelect').value;
-            if (!dept) { showToast('Select Department first', 'error'); return; }
+        let currentStatusData = [];
+        let currentStatusDept = '';
+        let currentStatusMonth = '';
+        let currentStatusYear = '';
 
-            const btnViewPayroll = document.getElementById('btnViewPayrollStatus');
-            const btnDownloadPayroll = document.getElementById('btnDownloadPayrollStatus');
-            if (btnViewPayroll) btnViewPayroll.style.display = isAdmin ? 'inline-flex' : 'none';
-            if (btnDownloadPayroll) btnDownloadPayroll.style.display = isAdmin ? 'inline-flex' : 'none';
+        async function showStatusModal() {
+            const deptEl = document.getElementById('departmentSelect');
+            const monEl = document.getElementById('monthSelect');
+            const yrEl = document.getElementById('yearSelect');
+
+            const dept = (deptEl && deptEl.value) ? deptEl.value : 'All';
+            const mon = (monEl && monEl.value) ? monEl.value : new Date().toLocaleString('en-US', { month: 'long' });
+            const yr = (yrEl && yrEl.value) ? yrEl.value : new Date().getFullYear().toString();
+
+            currentStatusDept = dept;
+            currentStatusMonth = mon;
+            currentStatusYear = yr;
 
             showLoading('Fetching status...');
-            document.getElementById('statusSubtitle').textContent = `${dept} · ${mon} ${yr}`;
+            const deptTitle = (dept === 'All') ? 'All Departments' : dept;
+            document.getElementById('statusSubtitle').textContent = `${deptTitle} · ${mon} ${yr}`;
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=getStatus&department=${encodeURIComponent(dept)}&monthYear=${encodeURIComponent(mon + ' ' + yr)}`).then(r => r.json());
                 hideLoading();
                 if (res.status === 'success') {
-                    let html = '<table class="status-table"><thead><tr><th>Worker Name</th><th>Status</th><th>Action</th></tr></thead><tbody>';
-                    res.data.forEach(item => {
-                        const badgeClass = `badge-${item.status.toLowerCase()}`;
-                        let actions = '-';
-                        if (isAdmin && (item.status === 'Submitted' || item.status === 'Verified')) {
-                            actions = `<div style="display: flex; gap: 5px; justify-content: flex-start;"><button onclick="viewWorkerFromStatus('${item.name}')" style="background:var(--accent-primary); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">View</button>`;
-                            if (item.status === 'Verified') {
-                                actions += `<button onclick="handleResubmit('${item.name}')" style="background:var(--accent-orange); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Resubmit</button>`;
-                            }
-                            actions += `</div>`;
-                        }
-                        html += `<tr><td>${item.name}</td><td><span class="badge ${badgeClass}">${item.status}</span></td><td>${actions}</td></tr>`;
+                    currentStatusData = res.data || [];
+                    
+                    let pendingCount = 0;
+                    let submittedCount = 0;
+                    let verifiedCount = 0;
+
+                    currentStatusData.forEach(item => {
+                        const st = (item.status || '').toLowerCase();
+                        if (st === 'pending') pendingCount++;
+                        else if (st === 'submitted') submittedCount++;
+                        else if (st === 'verified') verifiedCount++;
                     });
+
+                    const elPending = document.getElementById('statusPendingCount');
+                    const elSubmitted = document.getElementById('statusSubmittedCount');
+                    const elVerified = document.getElementById('statusVerifiedCount');
+                    if (elPending) elPending.textContent = pendingCount;
+                    if (elSubmitted) elSubmitted.textContent = submittedCount;
+                    if (elVerified) elVerified.textContent = verifiedCount;
+
+                    const showDeptCol = (dept === 'All' || currentStatusData.some(d => d.department && d.department !== dept));
+
+                    let html = '<table class="status-table"><thead><tr>';
+                    if (showDeptCol) html += '<th style="text-align: left; padding: 10px 12px;">Department</th>';
+                    html += '<th style="text-align: left; padding: 10px 12px;">Worker Name</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+                    
+                    if (currentStatusData.length === 0) {
+                        html += `<tr><td colspan="${showDeptCol ? 4 : 3}" style="text-align: center; padding: 25px; color: var(--text-secondary);">No worker records found.</td></tr>`;
+                    } else {
+                        currentStatusData.forEach(item => {
+                            const badgeClass = `badge-${(item.status || 'pending').toLowerCase()}`;
+                            const wDept = item.department || dept;
+                            let actions = '-';
+                            if (isAdmin && (item.status === 'Submitted' || item.status === 'Verified')) {
+                                actions = `<div style="display: flex; gap: 5px; justify-content: flex-start;"><button onclick="viewWorkerFromStatus('${item.name}', '${wDept}')" style="background:var(--accent-primary); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">View</button>`;
+                                if (item.status === 'Verified') {
+                                    actions += `<button onclick="handleResubmit('${item.name}', '${wDept}')" style="background:var(--accent-orange); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Resubmit</button>`;
+                                }
+                                actions += `</div>`;
+                            }
+                            html += `<tr>`;
+                            if (showDeptCol) {
+                                html += `<td style="font-weight: 700; color: #334155; padding: 8px 12px;">${wDept}</td>`;
+                            }
+                            html += `<td style="padding: 8px 12px; font-weight: 600;">${item.name}</td><td><span class="badge ${badgeClass}">${item.status}</span></td><td>${actions}</td></tr>`;
+                        });
+                    }
                     html += '</tbody></table>';
                     document.getElementById('statusListContent').innerHTML = html;
                     document.getElementById('statusModal').classList.add('show');
@@ -277,10 +350,58 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyAfDeE-dM6fRXXH3Vk
             } catch (e) { hideLoading(); showToast('Error fetching status', 'error'); }
         }
 
-        function viewWorkerFromStatus(name) {
+        function viewWorkerFromStatus(name, dept) {
+            if (dept && document.getElementById('departmentSelect')) {
+                document.getElementById('departmentSelect').value = dept;
+                if (typeof loadWorkerList === 'function') loadWorkerList();
+            }
             document.getElementById('workerSelect').value = name;
             closeModal('statusModal');
             loadTimesheet();
+        }
+
+        function downloadStatusExcel() {
+            if (!currentStatusData || currentStatusData.length === 0) {
+                showToast('No status data to export', 'info');
+                return;
+            }
+
+            let pendingCount = 0;
+            let submittedCount = 0;
+            let verifiedCount = 0;
+
+            currentStatusData.forEach(item => {
+                const st = (item.status || '').toLowerCase();
+                if (st === 'pending') pendingCount++;
+                else if (st === 'submitted') submittedCount++;
+                else if (st === 'verified') verifiedCount++;
+            });
+
+            const deptTitle = (currentStatusDept === 'All') ? 'All Departments' : currentStatusDept;
+            const summaryComment = `pending: ${pendingCount}, submitted: ${submittedCount}, verified: ${verifiedCount}`;
+
+            // Build AoA format
+            const aoa = [
+                [`Submission Status - ${deptTitle} (${currentStatusMonth} ${currentStatusYear})`],
+                [`Summary: ${summaryComment}`],
+                [], // Empty row
+                ['Department', 'Worker Name', 'Status']
+            ];
+
+            currentStatusData.forEach(item => {
+                aoa.push([
+                    item.department || currentStatusDept,
+                    item.name,
+                    item.status
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(aoa);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Submission Status");
+            const fileName = `submission-status-${currentStatusDept.toLowerCase().replace(/\s+/g, '-')}-${currentStatusMonth}-${currentStatusYear}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            showToast('Submission Status Excel downloaded successfully!');
         }
 
         async function handleResubmit(name) {
@@ -792,4 +913,1383 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyAfDeE-dM6fRXXH3Vk
         }
 
         function openAdminChangePasswordModal() {
- 
+            const name = document.getElementById('adminId').value.trim();
+            if (!name) { showToast('Enter Admin User ID first', 'error'); return; }
+
+            const admin = masterAdmins.find(a => a.name === name);
+            if (!admin) { showToast('Invalid Admin User ID', 'error'); return; }
+
+            window._pendingCp = { dept: 'Admin', name: name, expected: admin.password };
+
+            document.getElementById('cpOldPassword').value = '';
+            document.getElementById('cpNewPassword').value = '';
+            document.getElementById('cpConfirmPassword').value = '';
+            document.getElementById('changePasswordModal').classList.add('show');
+        }
+
+        function openChangePasswordModal() {
+            const dept = document.getElementById('departmentSelect').value;
+            const name = document.getElementById('workerSelect').value.trim();
+            if (!dept || !name) {
+                showToast('Select department and worker first', 'error');
+                return;
+            }
+
+            const workerList = masterWorkerList[dept] || [];
+            const workerObj = workerList.find(w => (typeof w === 'string' ? w : w.name) === name);
+            if (!workerObj) {
+                showToast('Invalid worker name', 'error');
+                return;
+            }
+
+            window._pendingCp = {
+                dept: dept,
+                name: name,
+                expected: typeof workerObj === 'string' ? '' : (workerObj.password || '')
+            };
+
+            document.getElementById('cpOldPassword').value = '';
+            document.getElementById('cpNewPassword').value = '';
+            document.getElementById('cpConfirmPassword').value = '';
+            document.getElementById('changePasswordModal').classList.add('show');
+        }
+
+        async function submitPasswordChange() {
+            if (!window._pendingCp) return;
+            const { dept, name, expected } = window._pendingCp;
+
+            const oldPwd = document.getElementById('cpOldPassword').value;
+            const newPwd = document.getElementById('cpNewPassword').value;
+            const confPwd = document.getElementById('cpConfirmPassword').value;
+
+            if (!newPwd || newPwd.trim() === '') {
+                showToast('Enter a valid new password', 'error');
+                return;
+            }
+            if (newPwd !== confPwd) {
+                showToast('New passwords do not match', 'error');
+                return;
+            }
+
+            if (expected && expected.trim() !== '') {
+                if (oldPwd !== expected) {
+                    showToast('Incorrect old password', 'error');
+                    return;
+                }
+            }
+
+            showLoading('Updating password...');
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'changePassword', department: dept, workerName: name, oldPassword: oldPwd, newPassword: newPwd })
+                }).then(r => r.json());
+
+                hideLoading();
+                if (res.status === 'success') {
+                    showToast('Password updated successfully!');
+                    closeModal('changePasswordModal');
+                    if (dept !== 'Admin') {
+                        document.getElementById('workerPassword').value = newPwd;
+                    } else {
+                        document.getElementById('adminPassword').value = newPwd;
+                    }
+                    9q2Vy1qVTYmbVYdxYXUbAMz3jnk4Rp41c1e19z8EnsTy();
+                } else {
+                    showToast(res.message || 'Error updating password', 'error');
+                }
+            } catch (e) {
+                hideLoading();
+                showToast('Error connecting to server', 'error');
+            }
+        }
+
+        function goBack() {
+            if (isLocked) {
+                exitTimesheet();
+                return;
+            }
+            document.getElementById('exitConfirmModal').classList.add('show');
+        }
+
+
+        function exitTimesheet() {
+            if (isFullscreen) toggleFullscreen();
+            showSection('home');
+            document.getElementById('workerPassword').value = '';
+        }
+
+        // ===== ZOOM FUNCTIONALITY =====
+        function applyZoom() {
+            const slider = document.getElementById('zoomSliderInput');
+            const zoomVal = parseInt(slider.value);
+            document.getElementById('zoomText').textContent = zoomVal + '%';
+
+            const table = document.getElementById('spreadsheetTable');
+            if (table) {
+                table.style.zoom = zoomVal / 100;
+            }
+
+            const dayForm = document.getElementById('dayWiseForm');
+            if (dayForm) {
+                dayForm.style.zoom = zoomVal / 100;
+            }
+        }
+
+        function zoomIn() {
+            const slider = document.getElementById('zoomSliderInput');
+            if (parseInt(slider.value) < 150) {
+                slider.value = parseInt(slider.value) + 10;
+                applyZoom();
+            }
+        }
+
+        function zoomOut() {
+            const slider = document.getElementById('zoomSliderInput');
+            if (parseInt(slider.value) > 50) {
+                slider.value = parseInt(slider.value) - 10;
+                applyZoom();
+            }
+        }
+
+        // ===== FULLSCREEN =====
+        let isFullscreen = false;
+        function toggleFullscreen() {
+            const section = document.getElementById('timesheetSection'), header = document.querySelector('.header'), footer = document.querySelector('.footer'), icon = document.getElementById('fullscreenIcon');
+            isFullscreen = !isFullscreen;
+            if (isFullscreen) {
+                section.classList.add('fullscreen-mode');
+                if (header) header.style.display = 'none';
+                if (footer) footer.style.display = 'none';
+                icon.innerHTML = '<polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line>';
+            } else {
+                section.classList.remove('fullscreen-mode');
+                if (header) header.style.display = '';
+                if (footer) footer.style.display = '';
+                icon.innerHTML = '<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>';
+            }
+        }
+
+        // ===== KEYBOARD NAVIGATION =====
+        let EDITABLE_COL_INDICES = [];
+        document.addEventListener('keydown', function (e) {
+            const active = document.activeElement;
+            if (!active || !active.closest('.spreadsheet tbody')) return;
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab'].indexOf(e.key) === -1) return;
+
+            const td = active.closest('td'), tr = td.parentElement, tbody = tr.parentElement;
+            const cellIndex = Array.from(tr.children).indexOf(td), rowIndex = Array.from(tbody.children).indexOf(tr), totalRows = tbody.children.length;
+            const currentEditIdx = EDITABLE_COL_INDICES.indexOf(cellIndex);
+            let targetRow, targetInput;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                targetRow = tbody.children[rowIndex + 1];
+                if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                targetRow = tbody.children[rowIndex - 1];
+                if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                if (currentEditIdx < EDITABLE_COL_INDICES.length - 1) targetInput = tr.children[EDITABLE_COL_INDICES[currentEditIdx + 1]]?.querySelector('input, select');
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentEditIdx > 0) targetInput = tr.children[EDITABLE_COL_INDICES[currentEditIdx - 1]]?.querySelector('input, select');
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    targetRow = tbody.children[rowIndex - 1];
+                    if (targetRow) targetInput = targetRow.children[cellIndex]?.querySelector('input, select');
+                } else {
+                    if (rowIndex < totalRows - 1) targetInput = tbody.children[rowIndex + 1].children[cellIndex]?.querySelector('input, select');
+                    else if (currentEditIdx < EDITABLE_COL_INDICES.length - 1) targetInput = tbody.children[0].children[EDITABLE_COL_INDICES[currentEditIdx + 1]]?.querySelector('input, select');
+                }
+            } else if (e.key === 'Tab') {
+                if (!e.shiftKey && currentEditIdx === EDITABLE_COL_INDICES.length - 1) {
+                    e.preventDefault();
+                    targetRow = tbody.children[rowIndex + 1];
+                    if (targetRow) targetInput = targetRow.children[EDITABLE_COL_INDICES[0]]?.querySelector('input, select');
+                } else if (e.shiftKey && currentEditIdx === 0) {
+                    e.preventDefault();
+                    targetRow = tbody.children[rowIndex - 1];
+                    if (targetRow) targetInput = targetRow.children[EDITABLE_COL_INDICES[EDITABLE_COL_INDICES.length - 1]]?.querySelector('input, select');
+                }
+            }
+
+            if (targetInput) {
+                targetInput.focus();
+                targetInput.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
+            }
+        });
+
+        // Global shortcut for fullscreen
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F11') {
+                const section = document.getElementById('timesheetSection');
+                if (section && !section.classList.contains('hidden')) { e.preventDefault(); toggleFullscreen(); }
+            }
+        });
+
+        function exportToExcel() {
+            const activeCols = getActiveColumns();
+            const data = getTableRows();
+
+            let headers = ["Date", "Day"];
+            activeCols.forEach(col => {
+                let label = col.topLabel && col.topLabel !== col.label ? `${col.topLabel} ${col.label}` : col.label;
+                headers.push(label);
+            });
+
+            let aoa = [headers];
+            data.forEach(row => {
+                let rowData = [row.date, row.day];
+                activeCols.forEach(col => {
+                    let val = row[col.id] !== undefined ? row[col.id] : '';
+                    rowData.push(val);
+                });
+                aoa.push(rowData);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(aoa);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Timesheet");
+
+            const filename = `${currentWorker}_${currentMonth}_${currentYear}.xlsx`;
+
+            // Download Locally
+            XLSX.writeFile(wb, filename);
+
+            // Upload to Google Drive
+            showToast('Uploading Excel to Drive...', 'success');
+            const base64Data = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'uploadExcel',
+                    filename: filename,
+                    department: currentDepartment,
+                    workerName: currentWorker,
+                    month: currentMonth,
+                    year: currentYear,
+                    data: base64Data
+                })
+            }).then(r => r.json()).then(res => {
+                if (res.status === 'success') {
+                    showToast('Excel saved to Drive successfully!', 'success');
+                } else {
+                    showToast(res.message || 'Error saving to Drive', 'error');
+                }
+            }).catch(e => {
+                showToast('Connection error while saving to Drive', 'error');
+                console.error(e);
+            });
+        }
+        window.addEventListener('beforeunload', function (e) {
+            const timesheetSection = document.getElementById('timesheetSection');
+            if (timesheetSection && !timesheetSection.classList.contains('hidden') && typeof isLocked !== 'undefined' && !isLocked) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    
+
+// ===== ACCOUNTS PORTAL SCRIPT =====
+
+let masterList = {};
+let masterWorkers = [];
+let allDepartments = [];
+let step1Data = [];
+let step2Data = [];
+let step3Data = []; // Tech mapping
+let step4Data = []; // Final comparison
+let currentUploadedFileName = "accounts_summary.xlsx";
+
+function showAccountsLoading(show) {
+    const overlay = document.getElementById('loadingOverlay');
+    if (show) overlay.classList.remove('hidden');
+    else overlay.classList.add('hidden');
+}
+
+function switchSection(sectionId) {
+    document.querySelectorAll('.accounts-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+}
+
+async function attemptLogin() {
+    const id = document.getElementById('loginUserId').value.trim();
+    const pwd = document.getElementById('loginPassword').value;
+    
+    if(!id || !pwd) return alert('Enter ID and Password');
+    
+    showAccountsLoading(true);
+    try {
+        const res = await fetch(`${SCRIPT_URL}?action=getAccountsData`);
+        const result = await res.json();
+        
+        if (result.status === 'success') {
+            const users = result.data;
+            const validUser = users.find(u => u.id === id && u.password === pwd);
+            if (validUser) {
+                masterList = result.masterList || {};
+                // Extract all worker names from master list for autocomplete/matching
+                masterWorkers = [];
+                allDepartments = Object.keys(masterList);
+                allDepartments.forEach(dept => {
+                    if (dept.toLowerCase().includes('accounts')) return;
+                    masterList[dept].forEach(w => {
+                        masterWorkers.push({ name: w.name || w, dept: dept });
+                    });
+                });
+                
+                populateDropdowns();
+                document.getElementById('headerActions').classList.remove('hidden');
+                showDashboard();
+            } else {
+                alert('Invalid Credentials or User not authorized for Accounts Portal.');
+            }
+        } else {
+            alert('Error connecting to server.');
+        }
+    } catch (e) {
+        alert('Network error.');
+    }
+    showAccountsLoading(false);
+}
+
+function populateDropdowns() {
+    const deptSelects = [document.getElementById('summaryDept'), document.getElementById('histDept')];
+    deptSelects.forEach(select => {
+        select.innerHTML = '<option value="">Select Dept</option>';
+        allDepartments.forEach(d => {
+            if (d !== 'Admin ID') {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                select.appendChild(opt);
+            }
+        });
+    });
+
+    const yearSelects = [document.getElementById('summaryYear'), document.getElementById('histYear')];
+    const currentYear = new Date().getFullYear();
+    yearSelects.forEach(select => {
+        select.innerHTML = '';
+        for (let y = currentYear - 2; y <= currentYear + 3; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if(y === currentYear) opt.selected = true;
+            select.appendChild(opt);
+        }
+    });
+
+    const monthSelects = [document.getElementById('histMonth')];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    monthSelects.forEach(select => {
+        select.innerHTML = '';
+        months.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = m;
+            select.appendChild(opt);
+        });
+    });
+}
+
+function showDashboard() { switchSection('dashboardSection'); }
+function logout() { document.getElementById('headerActions').classList.add('hidden'); switchSection('loginSection'); }
+function startNewUpload() { switchSection('wizardSection'); goToStep(1); }
+function showHistory() { switchSection('historySection'); }
+
+// --- WIZARD NAVIGATION ---
+function goToStep(step) {
+    document.querySelectorAll('.wizard-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById(`step${step}Content`).classList.remove('hidden');
+    
+    document.querySelectorAll('.step').forEach((s, idx) => {
+        s.classList.remove('active', 'completed');
+        if (idx + 1 < step) s.classList.add('completed');
+        if (idx + 1 === step) s.classList.add('active');
+    });
+}
+function proceedToStep2() { generateStep2Data(); goToStep(2); }
+function proceedToStep3() { generateStep3Data(); goToStep(3); }
+function proceedToStep4() { goToStep(4); }
+
+// --- EXCEL PROCESSING (Step 1) ---
+function processExcelUpload() {
+    const file = document.getElementById('excelFile').files[0];
+    if (!file) return alert('Please select a .xlsx file');
+    currentUploadedFileName = file.name;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array', cellDates:true, dateNF:'dd-mmm-yy'});
+            
+            const sheetNames = workbook.SheetNames;
+            const getSheetData = (name) => {
+                const actualName = sheetNames.find(n => n.toLowerCase() === name.toLowerCase());
+                if (actualName && workbook.Sheets[actualName]) {
+                    return XLSX.utils.sheet_to_json(workbook.Sheets[actualName], {header: 1, raw: false, defval: ''});
+                }
+                return [];
+            };
+            
+            let d1 = getSheetData('D1');
+            let d2 = getSheetData('D2');
+            let d3 = getSheetData('D3');
+            
+            combineSheets(d1, d2, d3);
+        } catch (err) {
+            alert('Error processing file: ' + err.message + '\nMake sure the file is a valid Excel file and not protected.');
+            console.error(err);
+        }
+    };
+    reader.onerror = function() {
+        alert('Failed to read the file.');
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function normalizeHeader(h) {
+    if(!h) return '';
+    return h.toString().toUpperCase().replace(/[\n\r]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function findColIndex(headers, possibleNames) {
+    for(let i=0; i<headers.length; i++) {
+        const norm = normalizeHeader(headers[i]);
+        if(possibleNames.includes(norm)) return i;
+    }
+    return -1;
+}
+
+function extractData(sheetData, mappingRules) {
+    if(!sheetData || sheetData.length === 0) return [];
+    
+    let bestRowIdx = -1;
+    let bestMatchCount = 0;
+    let bestMappings = {};
+    
+    // Search the first 20 rows for the header row
+    for(let r=0; r<Math.min(sheetData.length, 20); r++) {
+        const headers = sheetData[r] || [];
+        let matchCount = 0;
+        let mappings = {};
+        for (const [targetCol, possibleNames] of Object.entries(mappingRules)) {
+            const idx = findColIndex(headers, possibleNames);
+            mappings[targetCol] = idx;
+            if(idx >= 0) matchCount++;
+        }
+        if(matchCount > bestMatchCount) {
+            bestMatchCount = matchCount;
+            bestRowIdx = r;
+            bestMappings = mappings;
+        }
+    }
+    
+    if (bestRowIdx === -1 || bestMatchCount === 0) return []; // Headers not found
+    
+    const result = [];
+    for(let i = bestRowIdx + 1; i < sheetData.length; i++) {
+        const row = sheetData[i] || [];
+        let isEmpty = true;
+        let rowData = {};
+        for (const targetCol of Object.keys(mappingRules)) {
+            const idx = bestMappings[targetCol];
+            const val = idx >= 0 ? row[idx] : '';
+            rowData[targetCol] = val;
+            if(val !== '' && val !== null && val !== undefined) isEmpty = false;
+        }
+        if(!isEmpty) result.push(rowData);
+    }
+    return result;
+}
+
+function combineSheets(d1, d2, d3) {
+    const rules = {
+        'D.NO': ['TIMESHEET D NUMBER', 'D NO', 'D NO.'],
+        'TIME SHEET NUMBER': ['TIME SHEET NUMBER', 'TIME SHEET NO', 'TIME SHEET NO.'],
+        'DATE': ['DATE'],
+        'CLIENT NAME': ['CLIENT NAME', 'CLIENT'],
+        'QC NAME': ['QC NAME', 'PROJECT NAME/QC'],
+        'LOCATION': ['LOCATION', 'SITE LOCATION'],
+        'TEST METHOD': ['TEST METHOD'],
+        'LEADER': ['LEADER', 'TESTED BY TECHNICIAN 1'],
+        'TECH #02': ['TECH #02', 'TESTED BY TECHNICIAN 2'],
+        'TECH #03': ['TECH #03', 'TESTED BY TECHNICIAN 3'],
+        'TECH #04': ['TECH #04', 'TESTED BY TECHNICIAN 4']
+    };
+
+    const ex1 = extractData(d1, rules);
+    const ex2 = extractData(d2, rules);
+    const ex3 = extractData(d3, rules);
+    
+    step1Data = [...ex1, ...ex2, ...ex3];
+    renderStep1Table();
+    document.getElementById('step1Preview').classList.remove('hidden');
+}
+
+function renderStep1Table() {
+    const thead = document.querySelector('#step1Table thead tr');
+    const tbody = document.querySelector('#step1Table tbody');
+    thead.innerHTML = ''; tbody.innerHTML = '';
+    
+    const cols = ['D.NO', 'TIME SHEET NUMBER', 'DATE', 'CLIENT NAME', 'QC NAME', 'LOCATION', 'TEST METHOD', 'LEADER', 'TECH #02', 'TECH #03', 'TECH #04'];
+    cols.forEach(c => {
+        const th = document.createElement('th');
+        th.textContent = c;
+        thead.appendChild(th);
+    });
+    
+    step1Data.forEach(row => {
+        const tr = document.createElement('tr');
+        cols.forEach(c => {
+            const td = document.createElement('td');
+            td.textContent = row[c] || '';
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+}
+
+// --- STEP 2: UNPIVOT ---
+function generateStep2Data() {
+    step2Data = [];
+    const baseCols = ['D.NO', 'TIME SHEET NUMBER', 'DATE', 'CLIENT NAME', 'QC NAME', 'LOCATION', 'TEST METHOD'];
+    const techCols = ['LEADER', 'TECH #02', 'TECH #03', 'TECH #04'];
+    
+    step1Data.forEach(row => {
+        techCols.forEach(tc => {
+            if (row[tc] && row[tc].toString().trim() !== '') {
+                const newRow = {};
+                baseCols.forEach(bc => newRow[bc] = row[bc]);
+                newRow['TECH'] = row[tc].toString().trim();
+                newRow['TECH TYPE'] = tc;
+                step2Data.push(newRow);
+            }
+        });
+    });
+    
+    renderStep2Table();
+}
+
+function renderStep2Table() {
+    const thead = document.querySelector('#step2Table thead tr');
+    const tbody = document.querySelector('#step2Table tbody');
+    thead.innerHTML = ''; tbody.innerHTML = '';
+    
+    const cols = ['D.NO', 'TIME SHEET NUMBER', 'DATE', 'CLIENT NAME', 'QC NAME', 'LOCATION', 'TEST METHOD', 'TECH', 'TECH TYPE'];
+    cols.forEach(c => {
+        const th = document.createElement('th'); th.textContent = c; thead.appendChild(th);
+    });
+    
+    step2Data.forEach(row => {
+        const tr = document.createElement('tr');
+        cols.forEach(c => {
+            const td = document.createElement('td'); td.textContent = row[c] || ''; tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+}
+
+// --- STEP 3: MATCHING ---
+function calculateMatch(str1, str2) {
+    // Very basic distance or token match
+    const s1 = str1.toLowerCase().trim();
+    const s2 = str2.toLowerCase().trim();
+    if (s1 === s2) return 100;
+    
+    const tokens1 = s1.split(/\s+/);
+    const tokens2 = s2.split(/\s+/);
+    let matchCount = 0;
+    tokens1.forEach(t => { if(tokens2.includes(t)) matchCount++; });
+    
+    return (matchCount / Math.max(tokens1.length, tokens2.length)) * 100;
+}
+
+// --- STEP 3: TECH MATCHING & UNDO/REDO ---
+let step3UndoStack = [];
+let step3RedoStack = [];
+
+function getCurrentStep3Selections() {
+    const selections = {};
+    document.querySelectorAll('#step3Table select').forEach(sel => {
+        if (sel.dataset.tech) {
+            selections[sel.dataset.tech] = sel.value;
+        }
+    });
+    return selections;
+}
+
+function saveStep3CurrentStateToUndo(actionName = 'Action') {
+    const state = {
+        step2Data: JSON.parse(JSON.stringify(step2Data)),
+        selections: getCurrentStep3Selections(),
+        actionName: actionName
+    };
+    step3UndoStack.push(state);
+    if (step3UndoStack.length > 50) step3UndoStack.shift();
+    step3RedoStack = [];
+    updateStep3UndoRedoButtons();
+}
+
+function saveStep3StateDirect(state) {
+    step3UndoStack.push(state);
+    if (step3UndoStack.length > 50) step3UndoStack.shift();
+    step3RedoStack = [];
+    updateStep3UndoRedoButtons();
+}
+
+function undoStep3() {
+    if (step3UndoStack.length === 0) return;
+
+    const currentState = {
+        step2Data: JSON.parse(JSON.stringify(step2Data)),
+        selections: getCurrentStep3Selections(),
+        actionName: 'Current State'
+    };
+    step3RedoStack.push(currentState);
+
+    const prevState = step3UndoStack.pop();
+    step2Data = JSON.parse(JSON.stringify(prevState.step2Data));
+    generateStep3Data(prevState.selections);
+    updateStep3UndoRedoButtons();
+
+    if (typeof showToast === 'function') {
+        showToast(`Undo: Reverted ${prevState.actionName || 'change'}. Data restored!`, 'info');
+    }
+}
+
+function redoStep3() {
+    if (step3RedoStack.length === 0) return;
+
+    const currentState = {
+        step2Data: JSON.parse(JSON.stringify(step2Data)),
+        selections: getCurrentStep3Selections(),
+        actionName: 'Current State'
+    };
+    step3UndoStack.push(currentState);
+
+    const nextState = step3RedoStack.pop();
+    step2Data = JSON.parse(JSON.stringify(nextState.step2Data));
+    generateStep3Data(nextState.selections);
+    updateStep3UndoRedoButtons();
+
+    if (typeof showToast === 'function') {
+        showToast(`Redo: Restored ${nextState.actionName || 'change'}.`, 'info');
+    }
+}
+
+function updateStep3UndoRedoButtons() {
+    const btnUndo = document.getElementById('btnStep3Undo');
+    const btnRedo = document.getElementById('btnStep3Redo');
+
+    if (btnUndo) {
+        const canUndo = step3UndoStack.length > 0;
+        btnUndo.disabled = !canUndo;
+        btnUndo.style.opacity = canUndo ? '1' : '0.5';
+        btnUndo.style.cursor = canUndo ? 'pointer' : 'not-allowed';
+        btnUndo.style.borderColor = canUndo ? '#4361ee' : 'var(--border-color, #cbd5e1)';
+        btnUndo.style.color = canUndo ? '#4361ee' : 'var(--text-secondary, #64748b)';
+        if (canUndo) {
+            const lastAction = step3UndoStack[step3UndoStack.length - 1].actionName;
+            btnUndo.title = `Undo: ${lastAction} (Ctrl+Z)`;
+        } else {
+            btnUndo.title = 'Nothing to undo (Ctrl+Z)';
+        }
+    }
+
+    if (btnRedo) {
+        const canRedo = step3RedoStack.length > 0;
+        btnRedo.disabled = !canRedo;
+        btnRedo.style.opacity = canRedo ? '1' : '0.5';
+        btnRedo.style.cursor = canRedo ? 'pointer' : 'not-allowed';
+        btnRedo.style.borderColor = canRedo ? '#4361ee' : 'var(--border-color, #cbd5e1)';
+        btnRedo.style.color = canRedo ? '#4361ee' : 'var(--text-secondary, #64748b)';
+        if (canRedo) {
+            const nextAction = step3RedoStack[step3RedoStack.length - 1].actionName;
+            btnRedo.title = `Redo: ${nextAction} (Ctrl+Y)`;
+        } else {
+            btnRedo.title = 'Nothing to redo (Ctrl+Y)';
+        }
+    }
+}
+
+function calculateMatch(str1, str2) {
+    const s1 = str1.toLowerCase().trim();
+    const s2 = str2.toLowerCase().trim();
+    if (s1 === s2) return 100;
+    
+    const tokens1 = s1.split(/\s+/);
+    const tokens2 = s2.split(/\s+/);
+    let matchCount = 0;
+    tokens1.forEach(t => { if (tokens2.includes(t)) matchCount++; });
+    
+    return (matchCount / Math.max(tokens1.length, tokens2.length)) * 100;
+}
+
+function generateStep3Data(preservedSelections = {}) {
+    step3Data = [];
+    const uniqueTechs = {};
+    step2Data.forEach(row => {
+        const tech = row['TECH'] ? String(row['TECH']).trim() : '';
+        if (!tech) return;
+        if (!uniqueTechs[tech]) {
+            uniqueTechs[tech] = [];
+        }
+        uniqueTechs[tech].push(row['TIME SHEET NUMBER']);
+    });
+    
+    const tbody = document.querySelector('#step3Table tbody');
+    tbody.innerHTML = '';
+    
+    const techKeys = Object.keys(uniqueTechs);
+    if (techKeys.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 25px; color: var(--text-secondary, #64748b);">No technicians found in extracted data.</td></tr>';
+        updateStep3UndoRedoButtons();
+        return;
+    }
+    
+    techKeys.forEach(techName => {
+        let scores = masterWorkers.map(mw => {
+            return { name: mw.name, score: calculateMatch(techName, mw.name) };
+        });
+        
+        scores.sort((a, b) => a.score - b.score);
+        
+        const tr = document.createElement('tr');
+        
+        // 1. Delete '✕' Column
+        const tdDel = document.createElement('td');
+        tdDel.style.textAlign = 'center';
+        tdDel.style.verticalAlign = 'middle';
+        tdDel.style.width = '50px';
+        tdDel.style.padding = '6px 4px';
+
+        const btnDel = document.createElement('button');
+        btnDel.type = 'button';
+        btnDel.title = `Delete "${techName}" and remove from data/Excel`;
+        btnDel.textContent = '✕';
+        btnDel.style.background = '#fee2e2';
+        btnDel.style.color = '#dc2626';
+        btnDel.style.border = '1px solid #fca5a5';
+        btnDel.style.borderRadius = '6px';
+        btnDel.style.width = '30px';
+        btnDel.style.height = '30px';
+        btnDel.style.fontWeight = '800';
+        btnDel.style.fontSize = '0.95rem';
+        btnDel.style.cursor = 'pointer';
+        btnDel.style.display = 'inline-flex';
+        btnDel.style.alignItems = 'center';
+        btnDel.style.justifyContent = 'center';
+        btnDel.style.transition = 'all 0.15s ease';
+        btnDel.onmouseover = () => {
+            btnDel.style.background = '#dc2626';
+            btnDel.style.color = '#ffffff';
+            btnDel.style.borderColor = '#b91c1c';
+            btnDel.style.transform = 'scale(1.08)';
+        };
+        btnDel.onmouseout = () => {
+            btnDel.style.background = '#fee2e2';
+            btnDel.style.color = '#dc2626';
+            btnDel.style.borderColor = '#fca5a5';
+            btnDel.style.transform = 'scale(1)';
+        };
+        btnDel.onclick = () => deleteStep3Row(techName);
+        tdDel.appendChild(btnDel);
+        
+        // 2. Extracted Technician (Editable)
+        const tdTech = document.createElement('td');
+        tdTech.style.padding = '8px 10px';
+        tdTech.style.minWidth = '250px';
+        const inputTech = document.createElement('input');
+        inputTech.type = 'text';
+        inputTech.style.width = '100%';
+        inputTech.style.padding = '8px 12px';
+        inputTech.style.borderRadius = '6px';
+        inputTech.style.border = '1.5px solid var(--border-color, #cbd5e1)';
+        inputTech.style.fontSize = '0.88rem';
+        inputTech.style.fontWeight = '600';
+        inputTech.style.color = '#1e293b';
+        inputTech.value = techName;
+        inputTech.dataset.oldTech = techName;
+        inputTech.onchange = handleTechNameEdit;
+        tdTech.appendChild(inputTech);
+        
+        // 3. Matched Master Worker (Dropdown with full name and match %)
+        const tdSts = document.createElement('td');
+        tdSts.style.padding = '8px 10px';
+        tdSts.style.minWidth = '380px';
+        const select = document.createElement('select');
+        select.style.width = '100%';
+        select.style.minWidth = '360px';
+        select.style.padding = '8px 12px';
+        select.style.borderRadius = '6px';
+        select.style.border = '1.5px solid #4361ee';
+        select.style.background = '#f8fafc';
+        select.style.fontSize = '0.88rem';
+        select.style.fontWeight = '600';
+        select.style.color = '#1e293b';
+        select.style.outline = 'none';
+        select.style.cursor = 'pointer';
+        select.dataset.tech = techName;
+        
+        scores.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.name;
+            opt.textContent = `${s.name} (${Math.round(s.score)}% match)`;
+            select.appendChild(opt);
+        });
+        
+        if(preservedSelections[techName]) {
+            select.value = preservedSelections[techName];
+        } else if(scores.length > 0) {
+            select.value = scores[scores.length - 1].name;
+        }
+
+        // Track changes for Undo/Redo
+        select.dataset.prevVal = select.value;
+        select.onfocus = (e) => {
+            e.target.dataset.prevVal = e.target.value;
+        };
+        select.onchange = (e) => {
+            const prevVal = e.target.dataset.prevVal || '';
+            const newVal = e.target.value;
+            if (prevVal !== newVal) {
+                const prevSelections = getCurrentStep3Selections();
+                prevSelections[techName] = prevVal;
+                saveStep3StateDirect({
+                    step2Data: JSON.parse(JSON.stringify(step2Data)),
+                    selections: prevSelections,
+                    actionName: `Changed match for "${techName}"`
+                });
+                e.target.dataset.prevVal = newVal;
+            }
+        };
+        
+        tdSts.appendChild(select);
+        
+        // 4. Timesheet Numbers
+        const tdTs = document.createElement('td');
+        tdTs.style.padding = '8px 12px';
+        tdTs.style.fontSize = '0.84rem';
+        tdTs.style.color = '#334155';
+        const tsNumbers = [...new Set(uniqueTechs[techName])].join(', ');
+        tdTs.textContent = tsNumbers;
+        
+        tr.appendChild(tdDel);
+        tr.appendChild(tdTech);
+        tr.appendChild(tdSts);
+        tr.appendChild(tdTs);
+        tbody.appendChild(tr);
+    });
+
+    updateStep3UndoRedoButtons();
+}
+
+function deleteStep3Row(techName) {
+    if (!confirm(`Are you sure you want to delete technician "${techName}" and all associated records from data and Excel?\n\n(Note: You can click "Undo" or press Ctrl+Z to restore if deleted by mistake).`)) {
+        return;
+    }
+
+    // Save state to undo before deleting
+    saveStep3CurrentStateToUndo(`Deleted "${techName}"`);
+
+    const beforeCount = step2Data.length;
+    step2Data = step2Data.filter(row => {
+        const rowTech = row['TECH'] ? String(row['TECH']).trim() : '';
+        return rowTech !== techName.trim();
+    });
+
+    const currentSelections = getCurrentStep3Selections();
+    delete currentSelections[techName];
+
+    generateStep3Data(currentSelections);
+    if (typeof showToast === 'function') {
+        showToast(`Deleted "${techName}" (${beforeCount - step2Data.length} records removed). Click "Undo" to restore.`);
+    } else {
+        alert(`Deleted "${techName}" (${beforeCount - step2Data.length} records removed). Click "Undo" to restore.`);
+    }
+}
+
+function handleTechNameEdit(e) {
+    const input = e.target;
+    const oldName = input.dataset.oldTech;
+    const newName = input.value.trim();
+    
+    if(!newName || newName === oldName) {
+        input.value = oldName;
+        return;
+    }
+
+    // Save state to undo before renaming
+    saveStep3CurrentStateToUndo(`Renamed "${oldName}" to "${newName}"`);
+    
+    const currentSelections = getCurrentStep3Selections();
+    
+    step2Data.forEach(row => {
+        const currentTech = row['TECH'] ? row['TECH'].trim() : '';
+        if(currentTech === oldName) {
+            row['TECH'] = newName;
+        }
+    });
+    
+    if(currentSelections[oldName]) {
+        currentSelections[newName] = currentSelections[oldName];
+        delete currentSelections[oldName];
+    }
+    
+    generateStep3Data(currentSelections);
+    if (typeof showToast === 'function') {
+        showToast(`Renamed "${oldName}" to "${newName}". Click "Undo" to revert.`);
+    }
+}
+
+// --- STEP 3 KEYBOARD SHORTCUTS (CTRL+Z / CTRL+Y) ---
+document.addEventListener('keydown', function (e) {
+    const step3Content = document.getElementById('step3Content');
+    if (!step3Content || step3Content.classList.contains('hidden')) return;
+
+    const activeEl = document.activeElement;
+    const isEditingInput = activeEl && activeEl.tagName === 'INPUT' && activeEl.type === 'text';
+
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (!e.shiftKey) {
+            if (!isEditingInput) {
+                e.preventDefault();
+                undoStep3();
+            }
+        } else {
+            e.preventDefault();
+            redoStep3();
+        }
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        redoStep3();
+    }
+});
+
+// --- STEP 4: COMPARE & SUMMARY ---
+async function fetchAndCompareData() {
+    const dept = document.getElementById('summaryDept').value;
+    const month = document.getElementById('summaryMonth').value;
+    const year = document.getElementById('summaryYear').value;
+    
+    if(!dept || !month || !year) return alert('Select Department, Month and Year');
+    
+    // 1. Build mapped data from Step 3 selections
+    const selects = document.querySelectorAll('#step3Table select');
+    const mapping = {};
+    selects.forEach(s => mapping[s.dataset.tech] = s.value);
+    
+    // Create flattened mapped step2 data
+    const mappedStep2 = step2Data.map(r => {
+        return {
+            name: mapping[r['TECH']],
+            date: r['DATE'],
+            tsNumber: r['TIME SHEET NUMBER']
+        };
+    });
+    
+    showAccountsLoading(true);
+    step4Data = [];
+
+    const uniqueMappedNames = [...new Set(mappedStep2.map(m => m.name))];
+    const allDeptWorkers = masterList[dept] ? masterList[dept].map(w => w.name || w) : [];
+    const workersToProcess = [...new Set([...allDeptWorkers, ...uniqueMappedNames])];
+
+    try {
+        let backendData = [];
+
+        const DEPARTMENTS_CONFIG = {
+            'RADIOGRAPHY': [
+                { id: 'nightShiftIn' }, { id: 'nightShiftOut' }, { id: 'lunchIn' }, { id: 'lunchOut' },
+                { id: 'standBy' }, { id: 'lunchRtClient' }, { id: 'lunchRtFilms' }, { id: 'tsNumber' },
+                { id: 'loc1Client1' }, { id: 'loc1Films' }, { id: 'loc2Client2' }, { id: 'loc2Films' },
+                { id: 'loc3Client3' }, { id: 'loc3Films' }, { id: 'expF4x10' }, { id: 'expF4x15' },
+                { id: 'expF17x14' }, { id: 'expFReshoot' }, { id: 'expFTotal' }, { id: 'otLunchRt' },
+                { id: 'otSiteToSite' }, { id: 'otXrayScar' }, { id: 'otProfile' }, { id: 'timesheetOt' },
+                { id: 'sunday' }, { id: 'totalOt' }, { id: 'otRtrDrtPautAllow' }, { id: 'otRopeAllow' },
+                { id: 'otWeldtestAllow' }, { id: 'busFarw' }
+            ],
+            'DEFAULT': [
+                { id: 'clientIn' }, { id: 'clientOut' }, { id: 'tsNumber' }, { id: 'siteLoc1' },
+                { id: 'siteLoc2' }, { id: 'otHrs' }, { id: 'siteAllowanceHrs' }, { id: 'travelAllowance' },
+                { id: 'otherAllowance' }, { id: 'busAllowance' }, { id: 'remarks' }
+            ]
+        };
+        const activeCols = DEPARTMENTS_CONFIG[dept] || DEPARTMENTS_CONFIG['DEFAULT'];
+        const keys = ['name', 'date', 'day', ...activeCols.map(c => c.id)].join(',');
+
+        const url = `${SCRIPT_URL}?action=getAllData&department=${encodeURIComponent(dept)}&monthYear=${encodeURIComponent(month + ' ' + year)}&keys=${encodeURIComponent(keys)}`;
+        const res = await fetch(url);
+        const text = await res.text();
+        let result = JSON.parse(text);
+
+        if (result.status === 'success' && result.data) {
+            result.data.forEach(r => {
+                backendData.push({
+                    name: r.name || r._workerName,
+                    date: r.date,
+                    tsNumber: r.tsNumber,
+                    sheetType: r._sheetType || 'normal'
+                });
+            });
+        }
+
+        const monthMap = {
+            'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
+            'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11
+        };
+        const monthIdx = monthMap[month];
+        const numDays = new Date(year, monthIdx + 1, 0).getDate();
+
+        mappedStep2.forEach(m => {
+            m.standardDate = formatDateForCompare(m.date);
+        });
+
+        // 2. Compare for full month
+        workersToProcess.forEach(workerName => {
+            for (let d = 1; d <= numDays; d++) {
+                const dd = String(d).padStart(2, '0');
+                const mm = String(monthIdx + 1).padStart(2, '0');
+                const standardDateStr = `${dd}/${mm}/${year}`;
+
+                const shortYear = String(year).slice(-2);
+                const excelDateStr = `${d}-${month.substring(0, 3)}-${shortYear}`;
+
+                const dprsMatches = mappedStep2.filter(m => (m.name && m.name.trim().toLowerCase() === workerName.trim().toLowerCase()) && m.standardDate === standardDateStr);
+                const stsMatches = backendData.filter(b => (b.name && b.name.trim().toLowerCase() === workerName.trim().toLowerCase()) && b.date === standardDateStr);
+
+                // Collect unique non-empty timesheet numbers from DPRS (Excel upload)
+                const dprsTsList = [];
+                dprsMatches.forEach(m => {
+                    const val = String(m.tsNumber || '').trim();
+                    if (val && val !== '-' && !dprsTsList.includes(val)) {
+                        dprsTsList.push(val);
+                    }
+                });
+
+                // Collect unique non-empty timesheet numbers from STS (both accounts sheet & normal sheet)
+                const stsTsList = [];
+                stsMatches.forEach(b => {
+                    const val = String(b.tsNumber || '').trim();
+                    if (val && val !== '-' && !stsTsList.includes(val)) {
+                        stsTsList.push(val);
+                    }
+                });
+
+                const dprsTsDisplay = dprsTsList.join(', ');
+                const stsTsDisplay = stsTsList.join(' & ');
+
+                let summary = 'MISMATCHED';
+
+                const splitIntoTokens = (list) => {
+                    let tokens = [];
+                    list.forEach(ts => {
+                        const parts = String(ts).split(/[\s,&\/\\\|]+/);
+                        parts.forEach(p => {
+                            const norm = p.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                            if (norm && !tokens.includes(norm)) tokens.push(norm);
+                        });
+                    });
+                    return tokens;
+                };
+
+                const dprsTokens = splitIntoTokens(dprsTsList);
+                const stsTokens = splitIntoTokens(stsTsList);
+
+                if (dprsTokens.length > 0 || stsTokens.length > 0) {
+                    let matchedCount = 0;
+                    const remainingStsTokens = [...stsTokens];
+
+                    dprsTokens.forEach(dprsT => {
+                        const matchIndex = remainingStsTokens.findIndex(stsT => stsT === dprsT || stsT.includes(dprsT) || dprsT.includes(stsT));
+                        if (matchIndex !== -1) {
+                            matchedCount++;
+                            remainingStsTokens.splice(matchIndex, 1);
+                        }
+                    });
+
+                    let mismatchedCount = (dprsTokens.length - matchedCount) + remainingStsTokens.length;
+
+                    if (matchedCount > 0 && mismatchedCount === 0) {
+                        summary = `${matchedCount} MATCHED`;
+                    } else if (matchedCount > 0 && mismatchedCount > 0) {
+                        summary = `${matchedCount} MATCHED, ${mismatchedCount} MISMATCHED`;
+                    } else {
+                        summary = `${mismatchedCount} MISMATCHED`;
+                    }
+                } else {
+                    summary = 'MISMATCHED';
+                }
+
+                step4Data.push({
+                    NAME: workerName,
+                    DATE: excelDateStr,
+                    DPRS_TS: dprsTsDisplay,
+                    STS_TS: stsTsDisplay,
+                    SUMMARY: summary
+                });
+            }
+        });
+
+        renderStep4Table();
+
+    } catch (e) {
+        alert('Error fetching backend data for comparison.');
+        console.error(e);
+    }
+    showAccountsLoading(false);
+}
+
+function formatDateForCompare(excelDateStr) {
+    // If it's already a string like "1-May-26" try to convert to DD/MM/YYYY matching the main portal
+    try {
+        const d = new Date(excelDateStr);
+        if (isNaN(d.getTime())) return excelDateStr; // Return as is if unparseable
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        return `${dd}/${mm}/${d.getFullYear()}`;
+    } catch (e) {
+        return excelDateStr;
+    }
+}
+
+function renderStep4Table() {
+    const tbody = document.querySelector('#step4Table tbody');
+    tbody.innerHTML = '';
+
+    step4Data.forEach(row => {
+        const tr = document.createElement('tr');
+        const summaryUpper = (row.SUMMARY || '').toUpperCase();
+        const isMatched = summaryUpper.includes('MATCHED') && !summaryUpper.includes('MISMATCHED');
+
+        tr.innerHTML = `
+            <td>${row.NAME}</td>
+            <td>${row.DATE}</td>
+            <td>${row.DPRS_TS}</td>
+            <td>${row.STS_TS}</td>
+            <td><span class="tag ${isMatched ? 'matched' : 'mismatched'}">${row.SUMMARY}</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function downloadExcelStep1() {
+    if(step1Data.length === 0) return alert('No data to download.');
+    const ws = XLSX.utils.json_to_sheet(step1Data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Step1_Combined");
+    XLSX.writeFile(wb, "Step1_" + currentUploadedFileName);
+}
+
+function downloadExcelStep2() {
+    if(step2Data.length === 0) return alert('No data to download.');
+    const ws = XLSX.utils.json_to_sheet(step2Data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Step2_Unpivoted");
+    XLSX.writeFile(wb, "Step2_" + currentUploadedFileName);
+}
+
+function downloadExcelStep3() {
+    const exportData = [];
+    document.querySelectorAll('#step3Table tbody tr').forEach(tr => {
+        const techInput = tr.cells[0].querySelector('input');
+        const techName = techInput ? techInput.value : tr.cells[0].textContent;
+        const stsSelect = tr.cells[1].querySelector('select');
+        const stsMatch = stsSelect ? stsSelect.value : '';
+        const tsNumbers = tr.cells[2].textContent;
+        exportData.push({
+            'TECH (from File)': techName,
+            'STS Match': stsMatch,
+            'Time Sheet Number(s)': tsNumbers
+        });
+    });
+    
+    if(exportData.length === 0) return alert('No data to download.');
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Step3_Mapping");
+    XLSX.writeFile(wb, "Step3_" + currentUploadedFileName);
+}
+
+async function showAccountsCommentInPortal() {
+    if (!step4Data || step4Data.length === 0) {
+        return alert('Please fetch and compare data first.');
+    }
+    const dept = document.getElementById('summaryDept').value;
+    const month = document.getElementById('summaryMonth').value;
+    const year = document.getElementById('summaryYear').value;
+
+    if (!dept || !month || !year) {
+        return alert('Please select department, month, and year.');
+    }
+
+    const perWorkerStats = {};
+    const workerGroups = {};
+    step4Data.forEach(r => {
+        if (!workerGroups[r.NAME]) workerGroups[r.NAME] = [];
+        workerGroups[r.NAME].push(r);
+    });
+
+    Object.keys(workerGroups).forEach(wName => {
+        const wRows = workerGroups[wName];
+        let wMatched = 0;
+        let wMismatched = 0;
+        wRows.forEach(r => {
+            const sUpper = (r.SUMMARY || '').toUpperCase();
+            let match1 = sUpper.match(/^(\d+) MATCHED$/);
+            let match2 = sUpper.match(/^(\d+) MATCHED, (\d+) MISMATCHED$/);
+            let match3 = sUpper.match(/^(\d+) MISMATCHED$/);
+            if (sUpper === 'MATCHED') wMatched++;
+            else if (match1) wMatched += parseInt(match1[1], 10);
+            else if (match2) {
+                wMatched += parseInt(match2[1], 10);
+                wMismatched += parseInt(match2[2], 10);
+            } else if (match3) {
+                wMismatched += parseInt(match3[1], 10);
+            } else {
+                wMismatched++;
+            }
+        });
+        perWorkerStats[wName] = { submitted: wMatched, notSubmitted: wMismatched };
+    });
+
+    localStorage.setItem(`accountsStats_${dept}_${month}_${year}`, JSON.stringify(perWorkerStats));
+    localStorage.setItem(`accountsRecon_${dept}_${month}_${year}`, JSON.stringify(step4Data));
+
+    showAccountsLoading(true);
+    try {
+        const res = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'saveAccountsStats',
+                department: dept,
+                monthYear: `${month} ${year}`,
+                stats: perWorkerStats,
+                reconciliation: step4Data
+            })
+        }).then(r => r.json());
+        showAccountsLoading(false);
+        alert(res.message || 'Accounts Comment & Timesheet reconciliation columns published successfully!');
+    } catch (e) {
+        showAccountsLoading(false);
+        alert('Accounts Comment enabled in portal!');
+    }
+}
+
+function downloadExcelStep1() {
+    if (step1Data.length === 0) return alert('No data to download.');
+    const ws = XLSX.utils.json_to_sheet(step1Data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Step1_Combined");
+    XLSX.writeFile(wb, "Step1_" + currentUploadedFileName);
+}
+
+function downloadExcelStep2() {
+    if (step2Data.length === 0) return alert('No data to download.');
+    const ws = XLSX.utils.json_to_sheet(step2Data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Step2_Unpivoted");
+    XLSX.writeFile(wb, "Step2_" + currentUploadedFileName);
+}
+
+function downloadExcelStep3() {
+    const exportData = [];
+    document.querySelectorAll('#step3Table tbody tr').forEach(tr => {
+        if (!tr.cells || tr.cells.length < 4) return;
+        const techInput = tr.cells[1].querySelector('input');
+        const techName = techInput ? techInput.value : tr.cells[1].textContent.trim();
+        const stsSelect = tr.cells[2].querySelector('select');
+        const stsMatch = stsSelect ? stsSelect.value : '';
+        const tsNumbers = tr.cells[3].textContent.trim();
+        if (!techName) return;
+        exportData.push({
+            'TECH (from File)': techName,
+            'STS Match': stsMatch,
+            'Time Sheet Number(s)': tsNumbers
+        });
+    });
+
+    if (exportData.length === 0) return alert('No data to download.');
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Step3_Mapping");
+    XLSX.writeFile(wb, "Step3_" + currentUploadedFileName);
+}
+
+function downloadSummaryExcel() {
+    if(step4Data.length === 0) return alert('No data to download.');
+    
+    const ws = XLSX.utils.json_to_sheet(step4Data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Summary");
+    
+    XLSX.writeFile(wb, "Accounts_Summary_" + currentUploadedFileName);
+}
+
+async function saveToDrive() {
+    if(step4Data.length === 0) return alert('No data to save.');
+    
+    const dept = document.getElementById('summaryDept').value;
+    const month = document.getElementById('summaryMonth').value;
+    const year = document.getElementById('summaryYear').value;
+    
+    showAccountsLoading(true);
+    const payload = {
+        action: 'saveAccountsSummary',
+        department: dept,
+        monthYear: `${month} ${year}`,
+        fileName: `Summary_${currentUploadedFileName.replace('.xlsx','')}_${new Date().getTime()}`,
+        data: step4Data
+    };
+    
+    try {
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload)
+        });
+        alert('Saved to Google Drive Successfully!');
+    } catch(e) {
+        alert('Error saving data.');
+    }
+    showAccountsLoading(false);
+}
+
+// --- HISTORY ---
+async function loadHistory() {
+    const dept = document.getElementById('histDept').value;
+    const month = document.getElementById('histMonth').value;
+    const year = document.getElementById('histYear').value;
+    
+    if(!dept || !month || !year) return alert('Select filters.');
+    
+    showAccountsLoading(true);
+    try {
+        const url = `${SCRIPT_URL}?action=getAccountsHistory&department=${encodeURIComponent(dept)}&monthYear=${encodeURIComponent(month + ' ' + year)}`;
+        const res = await fetch(url);
+        const result = await res.json();
+        
+        const div = document.getElementById('historyResults');
+        if(result.status === 'success') {
+            if(result.files.length === 0) {
+                div.innerHTML = '<p>No history found.</p>';
+            } else {
+                div.innerHTML = '<ul>' + result.files.map(f => `<li><a href="${f.url}" target="_blank">${f.name}</a></li>`).join('') + '</ul>';
+            }
+        } else {
+            div.innerHTML = '<p>Error loading history.</p>';
+        }
+    } catch(e) {
+        alert('Network error loading history.');
+    }
+    showAccountsLoading(false);
+}
